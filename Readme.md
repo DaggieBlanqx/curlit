@@ -35,17 +35,10 @@ app.listen(port, () => {
 });
 ```
 
-## How It Works
-- **Request Interception**: The middleware captures the incoming request.
-- **Building the cURL Command**: It constructs a cURL command that includes the HTTP method, headers, data (for non-GET requests), and full URL.
-- **Logging**: The constructed command and response body are logged to the console.
-- Continuation: The original res.send is then called to complete the response.
-
-
 ## How the log looks like
 
 ### Request example
-- Here is an example of a POST request that has been intercepted/middlewared.
+- Here is an example of a GET request that has been intercepted/middlewared and logged out:
   ```curl
   curl --location 'http://localhost:9000/api/transactions?page=1&pageSize=10' \
   --header 'accept: application/json' \
@@ -58,7 +51,7 @@ app.listen(port, () => {
   ```
 
 ### Response example:
-- Here is an example of a response that has been intercepted/middlewared.
+- Here is an example of a response that has been intercepted/middlewared and logged out:
   ```json
 
   {
@@ -95,5 +88,31 @@ app.listen(port, () => {
 
   ```
 
+## How It Works
+- **Request Interception**: The middleware captures the incoming request.
+- **Building the cURL Command**: It constructs a cURL command that includes the HTTP method, headers, data (for non-GET requests), and full URL.
+- **Logging**: The constructed command and response body are logged to the console.
+- Continuation: The original res.send is then called to complete the response.
+
 ## License
 - MIT
+
+
+### Help information
+
+-   If you have any questions, ask via the [GitHub Discussion forums](https://github.com/DaggieBlanqx/curlit/discussions)
+-   If you have any suggestions or feedback, please [open an issue](https://github.com/DaggieBlanqx/curlit/issues) or [create a pull request](https://github.com/DaggieBlanqx/curlit/pulls).
+
+### Notes:
+
+-   This package is in active development.
+-   This means new features are added regularly.
+-   Incase your favorite feature is missing, you can always bump a version backwards or [create a pull request](https://github.com/DaggieBlanqx/curlit/pulls) which will be reviewed and merged into [the next release](https://github.com/DaggieBlanqx/curlit/releases).
+-   Thanks for your contribution.
+-   Happy coding!
+
+### Reach out:
+
+-   Follow me on Twitter: [@daggieblanqx](https://twitter.com/daggieblanqx)
+-   I am also on LinkedIn, where you can tag me to the awesome projects you've built using this package: [@daggieblanqx](https://www.linkedin.com/in/daggieblanqx/)
+-   Blog posts: [Logrocket/@Daggieblanqx](https://blog.logrocket.com/author/daggieblanqx/)
