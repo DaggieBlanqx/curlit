@@ -1,4 +1,12 @@
-# curlit
+# cUrlit
+
+
+<img src="https://img.shields.io/npm/v/curlit"
+    alt="cUrlit"/>
+
+<img src="https://img.shields.io/npm/dw/curlit"
+    alt="cUrlit"/>
+<br/>
 
 - **curlit** is an Express middleware that logs a multi‑line cURL command representing the incoming request and its response.
 - This can be useful for debugging, testing, or reproducing API calls easily.
