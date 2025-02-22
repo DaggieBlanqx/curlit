@@ -1,0 +1,11 @@
+# Exclude example and test files
+example.js
+tests/
+
+# Exclude local environment files and logs
+.env
+npm-debug.log*
+yarn-error.log*
+
+# Exlude .github workflows and files
+.github/

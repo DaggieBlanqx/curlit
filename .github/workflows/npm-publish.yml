@@ -1,0 +1,37 @@
+name: Publish to NPM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: Staging Environment
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm i
+      - run: npm test
+        env:
+          accessToken: ${{secrets.ACCESSTOKEN}}
+          graphAPIVersion: ${{secrets.GRAPHAPIVERSION}}
+          senderPhoneNumberId: ${{secrets.SENDERPHONENUMBERID}}
+          WABA_ID: ${{secrets.WABA_ID}}
+
+  publish-npm:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - run: npm i
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_IN_GITHUB_ACTIONS}}
