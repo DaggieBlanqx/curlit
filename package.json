@@ -34,7 +34,6 @@
     },
     "license": "MIT",
     "devDependencies": {
-        "prettier": "^3.4.2",
         "pre-commit": "^1.0.10",
         "standard": "^17.1.2"
     }
