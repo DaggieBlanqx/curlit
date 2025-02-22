@@ -4,15 +4,38 @@
     "description": "An Express middleware that logs a cURL command representation of incoming requests and responses. You can then copy the curl, run it or paste into postman to build a postman collection.",
     "main": "index.js",
     "scripts": {
-      "test": "node example.js"
+        "lint": "standard --fix"
+    },
+    "pre-commit": [
+        "lint"
+    ],
+    "standard": {
+        "ignore": [
+            "**/.trash/*"
+        ]
     },
     "keywords": [
-      "express",
-      "middleware",
-      "curl",
-      "logging"
+        "express",
+        "middleware",
+        "curl",
+        "logging"
     ],
-    "author": "Your Name",
-    "license": "MIT"
-  }
-  
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/daggieblanqx/curlit.git"
+    },
+    "bugs": {
+        "url": "https://github.com/daggieblanqx/curlit/issues"
+    },
+    "homepage": "https://github.com/daggieblanqx/curlit#readme",
+    "author": {
+        "name": "daggieblanqx",
+        "url": "https://github.com/daggieblanqx"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "prettier": "^3.4.2",
+        "pre-commit": "^1.0.10",
+        "standard": "^17.1.2"
+    }
+}

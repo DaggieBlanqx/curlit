@@ -15,13 +15,7 @@ jobs:
         with:
           node-version: 20
       - run: npm i
-      - run: npm test
-        env:
-          accessToken: ${{secrets.ACCESSTOKEN}}
-          graphAPIVersion: ${{secrets.GRAPHAPIVERSION}}
-          senderPhoneNumberId: ${{secrets.SENDERPHONENUMBERID}}
-          WABA_ID: ${{secrets.WABA_ID}}
-
+      - run: npm lint
   publish-npm:
     needs: test
     runs-on: ubuntu-latest
