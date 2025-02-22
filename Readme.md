@@ -39,8 +39,61 @@ app.listen(port, () => {
 - **Request Interception**: The middleware captures the incoming request.
 - **Building the cURL Command**: It constructs a cURL command that includes the HTTP method, headers, data (for non-GET requests), and full URL.
 - **Logging**: The constructed command and response body are logged to the console.
-Continuation: The original res.send is then called to complete the response.
+- Continuation: The original res.send is then called to complete the response.
 
+
+## How the log looks like
+
+### Request example
+- Here is an example of a POST request that has been intercepted/middlewared.
+  ```curl
+  curl --location 'http://localhost:9000/api/transactions?page=1&pageSize=10' \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --header 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3NDAyNTY4ODYsImV4cCI6MTc3MTc5Mjg4NiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.TcvmooXDwMgTo2vtPWkFbhp-eOywKpfCUl7kQvMU81g' \
+  --header 'x-client-id: com.example.app' \
+  --header 'host: localhost:9000' \
+  --header 'accept-encoding: gzip, deflate, br' \
+  --header 'connection: keep-alive'
+  ```
+
+### Response example:
+- Here is an example of a response that has been intercepted/middlewared.
+  ```json
+
+  {
+      "success": true,
+      "records": [
+          {
+              "id": 123456789,
+              "status": "Completed",
+              "reference": "INV-98765",
+              "amount": 100.5,
+              "currency": "USD",
+              "channel": "Credit Card",
+              "paidAt": "2024-02-20T15:30:00Z",
+              "customerId": "67b49ecb34975e212b9afbc0",
+              "yearMonth": 202402
+          },
+          {
+              "id": 123456790,
+              "status": "Pending",
+              "reference": "INV-98766",
+              "amount": 50,
+              "currency": "USD",
+              "channel": "Mpesa",
+              "paidAt": "2024-02-21T10:00:00Z",
+              "customerId": "67b49ecb34975e212b9afbc0",
+              "yearMonth": 202402
+          }
+      ],
+      "total": 150.5,
+      "page": 1,
+      "pageSize": 2,
+      "remaining": 5
+  }
+
+  ```
 
 ## License
 - MIT
