@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 20
       - run: npm i
-      - run: npm lint
+      - run: npm run lint
   publish-npm:
     needs: test
     runs-on: ubuntu-latest

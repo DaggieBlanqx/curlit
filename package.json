@@ -6,9 +6,6 @@
     "scripts": {
         "lint": "standard --fix"
     },
-    "pre-commit": [
-        "lint"
-    ],
     "standard": {
         "ignore": [
             "**/.trash/*"
@@ -34,7 +31,6 @@
     },
     "license": "MIT",
     "devDependencies": {
-        "pre-commit": "^1.0.10",
         "standard": "^17.1.2"
     }
 }
