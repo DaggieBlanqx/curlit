@@ -3,6 +3,7 @@
     "version": "2.0.0",
     "description": "An Express middleware that logs a cURL command representation of incoming requests and responses. You can then copy the curl, run it or paste into postman to build a postman collection.",
     "main": "index.js",
+    "type": "module",
     "scripts": {
         "lint": "standard --fix"
     },
