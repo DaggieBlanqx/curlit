@@ -156,6 +156,9 @@ Old codebases nobody wants to touch. Drop the proxy in front, capture all the un
 
 A webhook provider is sending malformed requests. Proxy their calls through cUrlit to see exactly what's arriving — headers, body, method — before it hits your handler.
 
+### 🔐 Security auditing
+Inspect every request and response flowing through your API in real time — spot missing auth headers, accidental PII leakage in responses, and unexpected data being sent by third-party SDKs. Before a pen test, export the full session as a Postman collection so testers can go straight to probing instead of spending half the engagement mapping your API surface.
+
 ### 🌍 Any backend, any language
 
 PHP shop. Django team. Rails project. Go microservice. None of them have a tool like this that works without touching their codebase. Drop the proxy in front and get the full dashboard instantly.
