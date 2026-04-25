@@ -5,7 +5,7 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "lint": "standard --fix"
+        "lint": "npx standard --fix"
     },
     "standard": {
         "ignore": [
@@ -30,8 +30,5 @@
         "name": "daggie blanqx",
         "url": "https://github.com/daggieblanqx"
     },
-    "license": "MIT",
-    "devDependencies": {
-        "standard": "^17.1.2"
-    }
+    "license": "MIT"
 }

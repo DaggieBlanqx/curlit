@@ -17,7 +17,7 @@ const DEFAULT_REDACTED_HEADERS = new Set([
   'set-cookie',
   'x-api-key',
   'x-auth-token',
-  'proxy-authorization',
+  'proxy-authorization'
 ])
 
 const DEFAULT_OPTIONS = {
@@ -34,7 +34,7 @@ const DEFAULT_OPTIONS = {
   logger: console.log,
 
   /** Whether to include the response body in the output. */
-  logResponseBody: true,
+  logResponseBody: true
 }
 
 // ---------------------------------------------------------------------------

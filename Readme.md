@@ -33,6 +33,13 @@ This is the magic of curlit—turning complexity into simplicity, one cURL comma
 npm install curlit
 ```
 
+or
+
+
+```bash
+pnpm add curlit
+```
+
 ## Usage
 
 ```js
