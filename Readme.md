@@ -34,6 +34,7 @@ npm install curlit
 ```
 
 ## Usage
+
 ```js
 const express = require('express'); // or import express from 'express'
 const curlit = require('curlit'); // or import curlit from 'curlit'
@@ -44,7 +45,7 @@ const app = express();
 app.use(express.json());
 
 // Use curlit middleware to log cURL commands
-app.use(curlit);
+app.use(curlit());
 
 app.get('/', (req, res) => {
   res.send('Hello, world!');
@@ -64,7 +65,7 @@ app.listen(port, () => {
   curl --location 'http://localhost:9000/api/transactions?page=1&pageSize=10' \
   --header 'accept: application/json' \
   --header 'content-type: application/json' \
-  --header 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3NDAyNTY4ODYsImV4cCI6MTc3MTc5Mjg4NiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.TcvmooXDwMgTo2vtPWkFbhp-eOywKpfCUl7kQvMU81g' \
+  --header 'authorization: <redacted>' \
   --header 'x-client-id: com.example.app' \
   --header 'host: localhost:9000' \
   --header 'accept-encoding: gzip, deflate, br' \
@@ -74,7 +75,6 @@ app.listen(port, () => {
 ### Response example:
 - Here is an example of a response that has been intercepted/middlewared and logged out:
   ```json
-
   {
       "success": true,
       "records": [
@@ -106,14 +106,122 @@ app.listen(port, () => {
       "pageSize": 2,
       "remaining": 5
   }
-
   ```
 
 ## How It Works
 - **Request Interception**: The middleware captures the incoming request.
 - **Building the cURL Command**: It constructs a cURL command that includes the HTTP method, headers, data (for non-GET requests), and full URL.
 - **Logging**: The constructed command and response body are logged to the console.
-- Continuation: The original res.send is then called to complete the response.
+- **Continuation**: The original `res.send` is then called to complete the response.
+
+---
+
+## Configuration
+
+`curlit` is a factory function — call it with an options object to customise its behaviour.
+
+```js
+app.use(curlit({
+  enabledEnvs:     ['development', 'test'], // environments where logging is active
+  maxBodyLength:   4096,                    // truncate response bodies larger than this (bytes)
+  logResponseBody: true,                    // set to false to only log the curl command
+  redactedHeaders: new Set([               // headers whose values are replaced with <redacted>
+    'authorization',
+    'cookie',
+    'set-cookie',
+    'x-api-key',
+    'x-auth-token',
+    'proxy-authorization',
+  ]),
+  logger: console.log,                     // swap in any logger (pino, winston, etc.)
+}))
+```
+
+All options are optional — calling `curlit()` with no arguments uses the defaults above.
+
+---
+
+## Usage Examples
+
+### Zero config (development only)
+
+```js
+app.use(curlit())
+```
+
+Active in `development` and `test` environments. Silently skipped in `production`.
+
+---
+
+### Force-enable in all environments
+
+```js
+app.use(curlit({ enabledEnvs: null }))
+```
+
+> **Warning:** this logs all request bodies and URLs. Only use this for short-lived debugging sessions.
+
+---
+
+### Suppress response body logging
+
+```js
+app.use(curlit({ logResponseBody: false }))
+```
+
+---
+
+### Custom redacted headers
+
+```js
+import curlit, { DEFAULT_REDACTED_HEADERS } from 'curlit'
+
+app.use(curlit({
+  redactedHeaders: new Set([
+    ...DEFAULT_REDACTED_HEADERS,
+    'x-tenant-id',
+    'x-internal-token',
+  ])
+}))
+```
+
+---
+
+### Custom logger (e.g. Pino)
+
+```js
+import pino from 'pino'
+
+const logger = pino()
+
+app.use(curlit({
+  logger: (msg) => logger.debug({ msg }, 'curlit')
+}))
+```
+
+---
+
+### Route-scoped usage
+
+Apply curlit to specific routes instead of globally.
+
+```js
+const curlLogger = curlit({ logResponseBody: false })
+
+app.post('/webhooks', curlLogger, (req, res) => {
+  res.sendStatus(200)
+})
+```
+
+---
+
+### Increase the body truncation limit
+
+```js
+app.use(curlit({ maxBodyLength: 20_000 }))
+```
+
+---
 
 ## License
 - MIT
