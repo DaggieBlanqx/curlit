@@ -263,6 +263,30 @@
       font-family: 'IBM Plex Sans', sans-serif;
     }
 
+    .btn-green {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(74, 222, 128, .3);
+      background: rgba(74, 222, 128, .08);
+      color: #4ade80;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-green:hover {
+      background: rgba(74, 222, 128, .15);
+    }
+
+    .btn-green:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
     /* Filter chips */
     .chip {
       font-size: 10px;
@@ -341,14 +365,20 @@
             style="color:var(--pm-orange)">it</span></span>
       </a>
 
-
     </div>
-    <div style="display:flex;align-items:center;gap:16px">
+    <div style="display:flex;align-items:center;gap:10px">
       <div style="display:flex;align-items:center;gap:5px">
         <div class="live-dot" id="liveDot" style="width:7px;height:7px;border-radius:50%;background:#4ade80"></div>
         <span id="liveLabel" style="font-size:11px;color:var(--pm-muted)">live</span>
       </div>
       <span style="font-size:11px;color:var(--pm-muted)"><span id="totalCount">0</span> requests</span>
+      <button class="btn-green" id="exportBtn" onclick="exportCollection()" disabled
+        title="Export all captured requests as a Postman collection">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 12l-4-4h2.5V3h3v5H12L8 12zm-5 2h10v1.5H3V14z" />
+        </svg>
+        Export
+      </button>
       <button class="btn-red" onclick="clearAll()">Clear</button>
     </div>
   </header>
@@ -449,6 +479,7 @@
           if (requests.length > 200) requests.pop()
         }
         renderList()
+        updateExportBtn()
       }
 
       es.onerror = () => {
@@ -493,6 +524,10 @@
         .replace(/\b(GET|POST|PUT|PATCH|DELETE|HEAD)\b/g, '<span class="cm">$1</span>')
         .replace(/(&lt;redacted&gt;)/g, '<span class="cr">$1</span>')
         .replace(/(&quot;[^&\n]*&quot;)/g, '<span class="cs">$1</span>')
+    }
+
+    function updateExportBtn() {
+      document.getElementById('exportBtn').disabled = requests.length === 0
     }
 
     // ── Render ────────────────────────────────────────────────────────────────
@@ -623,6 +658,69 @@
       } catch { }
     }
 
+    function exportCollection() {
+      const timestamp = new Date().toISOString().slice(0, 16).replace('T', ' ')
+
+      const collection = {
+        info: {
+          name: `cUrlit export — ${timestamp}`,
+          schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
+        },
+        item: requests.map(r => {
+          // Parse URL into Postman's structured format
+          let parsedUrl
+          try {
+            const u = new URL(r.url)
+            parsedUrl = {
+              raw: r.url,
+              protocol: u.protocol.replace(':', ''),
+              host: u.hostname.split('.'),
+              port: u.port || undefined,
+              path: u.pathname.split('/').filter(Boolean),
+              query: [...u.searchParams.entries()].map(([key, value]) => ({ key, value }))
+            }
+          } catch {
+            parsedUrl = { raw: r.url }
+          }
+
+          // Build header array, skip auto headers curl adds automatically
+          const skipHeaders = new Set(['host', 'user-agent', 'accept-encoding', 'connection', 'content-length'])
+          const header = Object.entries(r.headers || {})
+            .filter(([k]) => !skipHeaders.has(k.toLowerCase()))
+            .map(([key, value]) => ({ key, value: String(value) }))
+
+          // Build body if present
+          let body
+          if (r.responseBody && ['POST', 'PUT', 'PATCH'].includes(r.method)) {
+            const isJson = (() => { try { JSON.parse(r.responseBody); return true } catch { return false } })()
+            body = {
+              mode: 'raw',
+              raw: r.responseBody,
+              options: isJson ? { raw: { language: 'json' } } : undefined
+            }
+          }
+
+          return {
+            name: `${r.method} ${urlPath(r.url)}`,
+            request: {
+              method: r.method,
+              header,
+              url: parsedUrl,
+              ...(body ? { body } : {})
+            },
+            response: []
+          }
+        })
+      }
+
+      const blob = new Blob([JSON.stringify(collection, null, 2)], { type: 'application/json' })
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = `curlit-collection-${Date.now()}.json`
+      a.click()
+      URL.revokeObjectURL(a.href)
+    }
+
     function clearAll() {
       fetch(DASHBOARD_PATH + '/clear', { method: 'POST' }).then(() => {
         requests = []
@@ -630,6 +728,7 @@
         document.getElementById('detailEmpty').style.display = 'flex'
         document.getElementById('detailContent').style.display = 'none'
         renderList()
+        updateExportBtn()
       })
     }
 
@@ -657,7 +756,7 @@
       Daggie Blanqx
     </a>
     <span style="font-size:11px;color:var(--pm-muted)">·</span>
-    <a href="https://github.com/DaggieBlanqx/cUrlit" target="_blank" rel="noopener noreferrer"
+    <a href="https://github.com/DaggieBlanqx/curlit" target="_blank" rel="noopener noreferrer"
       style="font-size:11px;color:var(--pm-muted);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s"
       onmouseover="this.style.color='var(--pm-text)'" onmouseout="this.style.color='var(--pm-muted)'">
       <svg width="12" height="12" viewBox="0 0 98 96" fill="currentColor">
