@@ -53,7 +53,9 @@ process.env.NODE_ENV = env
 
 const app = express()
 
-// Parse JSON and urlencoded bodies so curlit can read req.body
+// Body parsers are needed so curlit can read req.body for logging.
+// The proxy.js proxyReq hook then re-streams the parsed body onto
+// the outgoing request so the target server receives it correctly.
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
