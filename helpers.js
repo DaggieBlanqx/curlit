@@ -26,6 +26,8 @@ export function serializeBody (body) {
  */
 export function buildCurlCommand (req, options) {
   const { redactedHeaders } = options
+  const isWindows = process.platform === 'win32'
+  const continuation = isWindows ? ' `' : ' \\'
   const lines = [`curl -X ${req.method}`]
 
   for (const [header, value] of Object.entries(req.headers)) {
@@ -48,9 +50,10 @@ export function buildCurlCommand (req, options) {
   lines.push(`  "${shellEscapeDouble(fullUrl)}"`)
 
   return lines
-    .map((line, i) => (i < lines.length - 1 ? `${line} \\` : line))
+    .map((line, i) => (i < lines.length - 1 ? `${line}${continuation}` : line))
     .join('\n')
 }
+
 /**
  * Format a response body for console display.
  * Truncates if over the configured limit.
