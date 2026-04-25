@@ -1,5 +1,5 @@
 # cUrlit — watch your Postman collection build itself
-
+Article: https://medium.com/@daggieblanqx/youve-been-documenting-apis-wrong-this-entire-time-d26b5c74f73f
 <!-- Package -->
 
 <img src="https://img.shields.io/npm/v/curlit" alt="Version"/> <img src="https://img.shields.io/npm/dt/curlit" alt="Total downloads"/> <img src="https://img.shields.io/node/v/curlit" alt="Node version"/> <img src="https://img.shields.io/npm/l/curlit" alt="License"/> <img src="https://img.shields.io/badge/works%20with-any%20backend-FF6C37" alt="Works with any backend"/>
