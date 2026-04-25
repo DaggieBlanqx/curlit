@@ -5,18 +5,19 @@
     "main": "index.js",
     "exports": "./index.js",
     "bin": {
-        "curlit-proxy": "./cli.js"
+        "curlit-proxy": "./src/proxy/cli.js"
     },
     "type": "module",
     "files": [
         "index.js",
-        "defaults.js",
-        "helpers.js",
-        "ring-buffer.js",
-        "dashboard.js",
-        "dashboard.html",
-        "proxy.js",
-        "cli.js",
+        "src/index.js",
+        "src/defaults.js",
+        "src/helpers.js",
+        "src/ring-buffer.js",
+        "src/dashboard/dashboard.js",
+        "src/dashboard/dashboard.html",
+        "src/proxy/proxy.js",
+        "src/proxy/cli.js",
         "README.md",
         "LICENSE"
     ],
