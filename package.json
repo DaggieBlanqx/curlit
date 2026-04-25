@@ -1,9 +1,20 @@
 {
     "name": "curlit",
     "version": "2.0.2",
-    "description": "An Express middleware that logs a cURL command representation of incoming requests and responses. You can then copy the curl, run it or paste into postman to build a postman collection.",
+    "description": "Stop documenting your API manually. cUrlit is an Express middleware that intercepts every request and generates a ready-to-run cURL command — complete with a live browser dashboard. Copy, replay, and export your entire API as a Postman collection in one click.",
     "main": "index.js",
+    "exports": "./index.js",
     "type": "module",
+    "files": [
+        "index.js",
+        "defaults.js",
+        "helpers.js",
+        "ring-buffer.js",
+        "dashboard.js",
+        "dashboard.html",
+        "README.md",
+        "LICENSE"
+    ],
     "scripts": {
         "lint": "npx standard --fix"
     },
@@ -16,7 +27,11 @@
         "express",
         "middleware",
         "curl",
-        "logging"
+        "curlit",
+        "logging",
+        "debug",
+        "postman",
+        "dashboard"
     ],
     "repository": {
         "type": "git",
@@ -27,8 +42,11 @@
     },
     "homepage": "https://github.com/daggieblanqx/curlit#readme",
     "author": {
-        "name": "daggie blanqx",
+        "name": "Daggie Blanqx",
         "url": "https://github.com/daggieblanqx"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }
