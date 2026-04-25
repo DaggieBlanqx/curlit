@@ -1,4 +1,4 @@
-import { DEFAULT_OPTIONS, DEFAULT_REDACTED_HEADERS } from './defaults.js'
+import { DEFAULT_OPTIONS, DEFAULT_REDACTED_HEADERS, DEFAULT_AUTO_HEADERS } from './defaults.js'
 import { buildCurlCommand, formatResponseBody } from './helpers.js'
 import { RingBuffer } from './ring-buffer.js'
 import { createDashboardRouter } from './dashboard.js'
@@ -105,4 +105,4 @@ function curlit (userOptions = {}) {
 }
 
 export default curlit
-export { DEFAULT_REDACTED_HEADERS }
+export { DEFAULT_REDACTED_HEADERS, DEFAULT_AUTO_HEADERS }

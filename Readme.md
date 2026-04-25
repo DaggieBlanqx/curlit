@@ -108,15 +108,10 @@ app.use(curlit({ dashboardPath: '/_debug' }))
 ### Request example
 
 ```curl
-curl -X GET \
-  -H "accept: application/json" \
+curl -X POST "http://localhost:9000/api/transactions" \
+  -H "x-api-key: <redacted>" \
   -H "content-type: application/json" \
-  -H "authorization: <redacted>" \
-  -H "x-client-id: com.example.app" \
-  -H "host: localhost:9000" \
-  -H "accept-encoding: gzip, deflate, br" \
-  -H "connection: keep-alive" \
-  "http://localhost:9000/api/transactions?page=1&pageSize=10"
+  -d '{"amount": 100.5, "currency": "USD"}'
 ```
 
 ### Response example
@@ -174,7 +169,7 @@ curlit is split into focused modules so each piece is independently readable and
 ```
 curlit/
 ├── index.js        — factory function, middleware wiring
-├── defaults.js     — DEFAULT_OPTIONS and DEFAULT_REDACTED_HEADERS constants
+├── defaults.js     — DEFAULT_OPTIONS, DEFAULT_REDACTED_HEADERS, DEFAULT_AUTO_HEADERS constants
 ├── helpers.js      — pure functions: curl building, escaping, body formatting
 ├── ring-buffer.js  — fixed-size in-memory buffer with pub/sub for SSE
 ├── dashboard.js    — SSE router, clear endpoint, HTML serving
@@ -202,6 +197,15 @@ app.use(curlit({
     'x-api-key',
     'x-auth-token',
     'proxy-authorization',
+  ]),
+  autoHeaders: new Set([                   // headers curl adds automatically — stripped from output
+    'host',
+    'user-agent',
+    'accept',
+    'accept-encoding',
+    'connection',
+    'content-length',
+    'transfer-encoding',
   ]),
   logger: console.log,                     // swap in any logger (pino, winston, etc.)
 }))
@@ -260,6 +264,26 @@ app.use(curlit({
     'x-tenant-id',
     'x-internal-token',
   ])
+}))
+```
+
+---
+
+### Custom auto headers
+
+By default, curlit strips headers that curl adds automatically (`host`, `content-length`, etc.) to keep the output clean. You can extend or replace this list.
+
+```js
+import curlit, { DEFAULT_AUTO_HEADERS } from 'curlit'
+
+// Add to the default set
+app.use(curlit({
+  autoHeaders: new Set([...DEFAULT_AUTO_HEADERS, 'x-forwarded-for', 'x-real-ip'])
+}))
+
+// Keep all headers — strip nothing
+app.use(curlit({
+  autoHeaders: new Set()
 }))
 ```
 

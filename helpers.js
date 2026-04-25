@@ -25,14 +25,16 @@ export function serializeBody (body) {
  * Build a multiline curl command string from the given request and options.
  */
 export function buildCurlCommand (req, options) {
-  const { redactedHeaders } = options
-  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+  const { redactedHeaders, autoHeaders } = options
 
-  // URL goes on the first line, right after the method
+  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
   const lines = [`curl -X ${req.method} "${shellEscapeDouble(fullUrl)}"`]
 
   for (const [header, value] of Object.entries(req.headers)) {
     const lowerHeader = header.toLowerCase()
+
+    if (autoHeaders.has(lowerHeader)) continue
+
     const displayValue = redactedHeaders.has(lowerHeader)
       ? '<redacted>'
       : Array.isArray(value) ? value.join(', ') : value
@@ -43,7 +45,6 @@ export function buildCurlCommand (req, options) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     const data = serializeBody(req.body)
     if (data !== null) {
-      // Single-quoted -d instead of --data-raw, matches the target format
       lines.push(`  -d '${data}'`)
     }
   }
