@@ -24,7 +24,7 @@ function buildHTML (dashboardPath) {
 /**
  * Create a router that handles all /_curlit/* routes.
  *
- * @param {import('./ring-buffer.js').RingBuffer} buffer
+ * @param {import('../ring-buffer.js').RingBuffer} buffer
  * @param {{ dashboardPath: string }} options
  * @returns Express-compatible middleware
  */
