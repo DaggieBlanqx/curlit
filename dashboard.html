@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>cUrlit dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --pm-orange: #FF6C37;
-      --pm-dark:   #1A1A2E;
-      --pm-panel:  #16213E;
-      --pm-card:   #0d1b35;
+      --pm-dark: #1A1A2E;
+      --pm-panel: #16213E;
+      --pm-card: #0d1b35;
       --pm-border: #1E3A6E;
-      --pm-text:   #E0E6F0;
-      --pm-muted:  #6B84A8;
+      --pm-text: #E0E6F0;
+      --pm-muted: #6B84A8;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -30,25 +35,90 @@
       flex-direction: column;
     }
 
-    code, pre, .mono { font-family: 'IBM Plex Mono', monospace; }
+    code,
+    pre,
+    .mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-thumb { background: var(--pm-border); border-radius: 3px; }
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--pm-border);
+      border-radius: 3px;
+    }
 
     /* Method badges */
-    .badge { display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.4px;font-family:'IBM Plex Mono',monospace }
-    .b-GET    { background:#1a3a52;color:#4ade80;border:1px solid #166534 }
-    .b-POST   { background:#3a2a12;color:#fb923c;border:1px solid #7c3a0f }
-    .b-PUT    { background:#1a2d4a;color:#60a5fa;border:1px solid #1d4ed8 }
-    .b-PATCH  { background:#2d1e4a;color:#c084fc;border:1px solid #5b21b6 }
-    .b-DELETE { background:#3a1818;color:#f87171;border:1px solid #991b1b }
-    .b-HEAD   { background:#1a2e2e;color:#34d399;border:1px solid #065f46 }
-    .b-default{ background:#2a2a3a;color:#94a3b8;border:1px solid #475569 }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      font-family: 'IBM Plex Mono', monospace
+    }
 
-    .s2 { color: #4ade80 }
-    .s3 { color: #fbbf24 }
-    .s4 { color: #f87171 }
-    .s5 { color: #f43f5e }
+    .b-GET {
+      background: #1a3a52;
+      color: #4ade80;
+      border: 1px solid #166534
+    }
+
+    .b-POST {
+      background: #3a2a12;
+      color: #fb923c;
+      border: 1px solid #7c3a0f
+    }
+
+    .b-PUT {
+      background: #1a2d4a;
+      color: #60a5fa;
+      border: 1px solid #1d4ed8
+    }
+
+    .b-PATCH {
+      background: #2d1e4a;
+      color: #c084fc;
+      border: 1px solid #5b21b6
+    }
+
+    .b-DELETE {
+      background: #3a1818;
+      color: #f87171;
+      border: 1px solid #991b1b
+    }
+
+    .b-HEAD {
+      background: #1a2e2e;
+      color: #34d399;
+      border: 1px solid #065f46
+    }
+
+    .b-default {
+      background: #2a2a3a;
+      color: #94a3b8;
+      border: 1px solid #475569
+    }
+
+    .s2 {
+      color: #4ade80
+    }
+
+    .s3 {
+      color: #fbbf24
+    }
+
+    .s4 {
+      color: #f87171
+    }
+
+    .s5 {
+      color: #f43f5e
+    }
 
     /* Request rows */
     .req-row {
@@ -56,21 +126,72 @@
       cursor: pointer;
       transition: background .12s, border-color .12s;
       padding: 9px 14px;
-      border-bottom: 1px solid rgba(30,60,110,.35);
+      border-bottom: 1px solid rgba(30, 60, 110, .35);
     }
-    .req-row:hover  { background: rgba(255,108,55,.06); border-left-color: rgba(255,108,55,.5); }
-    .req-row.active { background: rgba(255,108,55,.12); border-left-color: var(--pm-orange); }
-    @keyframes slideIn { from { opacity:0; transform:translateX(-6px) } to { opacity:1; transform:translateX(0) } }
-    .req-row.new { animation: slideIn .18s ease; }
+
+    .req-row:hover {
+      background: rgba(255, 108, 55, .06);
+      border-left-color: rgba(255, 108, 55, .5);
+    }
+
+    .req-row.active {
+      background: rgba(255, 108, 55, .12);
+      border-left-color: var(--pm-orange);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    .req-row.new {
+      animation: slideIn .18s ease;
+    }
 
     /* Live dot */
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
-    .live-dot { animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .25
+      }
+    }
+
+    .live-dot {
+      animation: pulse 1.6s ease-in-out infinite;
+    }
 
     /* Tabs */
-    .tab { padding:8px 16px;font-size:12px;font-weight:500;border-bottom:2px solid transparent;cursor:pointer;color:var(--pm-muted);transition:all .12s;white-space:nowrap }
-    .tab.active { color:var(--pm-orange);border-bottom-color:var(--pm-orange) }
-    .tab:hover:not(.active) { color:var(--pm-text) }
+    .tab {
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      color: var(--pm-muted);
+      transition: all .12s;
+      white-space: nowrap
+    }
+
+    .tab.active {
+      color: var(--pm-orange);
+      border-bottom-color: var(--pm-orange)
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--pm-text)
+    }
 
     /* cURL block */
     .curl-block {
@@ -87,241 +208,324 @@
     }
 
     /* Syntax highlights inside curl block */
-    .ck  { color: #FF6C37; font-weight: 600 }
-    .cf  { color: #60a5fa }
-    .cm  { color: #c084fc }
-    .cs  { color: #a5f3fc }
-    .cr  { color: #f87171 }
+    .ck {
+      color: #FF6C37;
+      font-weight: 600
+    }
+
+    .cf {
+      color: #60a5fa
+    }
+
+    .cm {
+      color: #c084fc
+    }
+
+    .cs {
+      color: #a5f3fc
+    }
+
+    .cr {
+      color: #f87171
+    }
 
     /* Buttons */
     .btn-orange {
-      font-size: 11px; padding: 4px 12px; border-radius: 4px;
-      border: 1px solid rgba(255,108,55,.35); background: rgba(255,108,55,.1);
-      color: var(--pm-orange); cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 108, 55, .35);
+      background: rgba(255, 108, 55, .1);
+      color: var(--pm-orange);
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
       transition: all .15s;
     }
-    .btn-orange:hover { background: rgba(255,108,55,.2); }
-    .btn-orange.copied { background:rgba(74,222,128,.12);color:#4ade80;border-color:rgba(74,222,128,.35); }
+
+    .btn-orange:hover {
+      background: rgba(255, 108, 55, .2);
+    }
+
+    .btn-orange.copied {
+      background: rgba(74, 222, 128, .12);
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, .35);
+    }
+
     .btn-red {
-      font-size: 11px; padding: 4px 12px; border-radius: 4px;
-      border: 1px solid rgba(248,113,113,.3); background: rgba(248,113,113,.08);
-      color: #f87171; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(248, 113, 113, .3);
+      background: rgba(248, 113, 113, .08);
+      color: #f87171;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
     }
 
     /* Filter chips */
     .chip {
-      font-size: 10px; padding: 2px 9px; border-radius: 20px;
-      border: 1px solid var(--pm-border); color: var(--pm-muted);
-      cursor: pointer; transition: all .12px; white-space: nowrap;
+      font-size: 10px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--pm-border);
+      color: var(--pm-muted);
+      cursor: pointer;
+      transition: all .12px;
+      white-space: nowrap;
     }
-    .chip.active { background: var(--pm-orange); color: #fff; border-color: var(--pm-orange); }
+
+    .chip.active {
+      background: var(--pm-orange);
+      color: #fff;
+      border-color: var(--pm-orange);
+    }
 
     /* Input */
     .filter-input {
-      width: 100%; background: var(--pm-card);
-      border: 1px solid var(--pm-border); border-radius: 5px;
-      color: var(--pm-text); padding: 6px 10px; font-size: 12px;
-      font-family: 'IBM Plex Sans', sans-serif; outline: none;
+      width: 100%;
+      background: var(--pm-card);
+      border: 1px solid var(--pm-border);
+      border-radius: 5px;
+      color: var(--pm-text);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      outline: none;
       transition: border-color .15s;
     }
-    .filter-input:focus { border-color: var(--pm-orange); }
+
+    .filter-input:focus {
+      border-color: var(--pm-orange);
+    }
 
     /* Header rows */
-    .h-row { display:grid;grid-template-columns:180px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid rgba(30,60,110,.3);font-size:11px }
-    .h-key { color:var(--pm-orange);font-family:'IBM Plex Mono',monospace;word-break:break-all }
-    .h-val { color:var(--pm-text);font-family:'IBM Plex Mono',monospace;word-break:break-all }
+    .h-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(30, 60, 110, .3);
+      font-size: 11px
+    }
+
+    .h-key {
+      color: var(--pm-orange);
+      font-family: 'IBM Plex Mono', monospace;
+      word-break: break-all
+    }
+
+    .h-val {
+      color: var(--pm-text);
+      font-family: 'IBM Plex Mono', monospace;
+      word-break: break-all
+    }
   </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
-<header style="background:var(--pm-panel);border-bottom:1px solid var(--pm-border);display:flex;align-items:center;justify-content:space-between;padding:9px 16px;flex-shrink:0">
-  <div style="display:flex;align-items:center;gap:10px">
-    <!-- <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="6" fill="#FF6C37"/>
-      <path d="M8 22 L12 10 L16 18 L20 10 L24 22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </svg> -->
-    <a href="https://github.com/DaggieBlanqx/cUrlit" target="_blank" rel="noopener noreferrer"
-   style="display:flex;align-items:center;color:var(--pm-text);opacity:.7;transition:opacity .15s"
-   onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">
-  <svg width="26" height="26" viewBox="0 0 98 96" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/>
-  </svg>
-</a>
+  <!-- HEADER -->
+  <header
+    style="background:var(--pm-panel);border-bottom:1px solid var(--pm-border);display:flex;align-items:center;justify-content:space-between;padding:9px 16px;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px">
 
-    <span style="font-weight:700;font-size:15px;letter-spacing:-.3px">curl<span style="color:var(--pm-orange)">it</span></span>
-    <span style="font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(255,108,55,.15);color:var(--pm-orange);border:1px solid rgba(255,108,55,.3)">dashboard</span>
-  </div>
-  <div style="display:flex;align-items:center;gap:16px">
-    <div style="display:flex;align-items:center;gap:5px">
-      <div class="live-dot" id="liveDot" style="width:7px;height:7px;border-radius:50%;background:#4ade80"></div>
-      <span id="liveLabel" style="font-size:11px;color:var(--pm-muted)">live</span>
+      <a href="https://github.com/DaggieBlanqx/curlit" target="_blank" rel="noopener noreferrer"
+        style="display:flex;align-items:center;gap:8px;text-decoration:none;opacity:.85;transition:opacity .15s"
+        onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.85">
+        <svg width="22" height="22" viewBox="0 0 98 96" fill="var(--pm-text)" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
+        </svg>
+        <span style="font-weight:700;font-size:15px;letter-spacing:-.3px;color:var(--pm-text)">cUrl<span
+            style="color:var(--pm-orange)">it</span></span>
+      </a>
+
+
     </div>
-    <span style="font-size:11px;color:var(--pm-muted)"><span id="totalCount">0</span> requests</span>
-    <button class="btn-red" onclick="clearAll()">Clear</button>
-  </div>
-</header>
-
-<!-- BODY -->
-<div style="display:flex;flex:1;overflow:hidden">
-
-  <!-- LEFT: list -->
-  <div style="width:360px;flex-shrink:0;border-right:1px solid var(--pm-border);display:flex;flex-direction:column;overflow:hidden">
-    <div style="padding:9px 10px;border-bottom:1px solid var(--pm-border);background:var(--pm-panel);flex-shrink:0">
-      <input class="filter-input" id="searchInput" placeholder="Filter by route, method, status…" oninput="applyFilters()"/>
-      <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">
-        <span class="chip active" data-method="ALL" onclick="setMethod(this)">ALL</span>
-        <span class="chip" data-method="GET" onclick="setMethod(this)">GET</span>
-        <span class="chip" data-method="POST" onclick="setMethod(this)">POST</span>
-        <span class="chip" data-method="PUT" onclick="setMethod(this)">PUT</span>
-        <span class="chip" data-method="PATCH" onclick="setMethod(this)">PATCH</span>
-        <span class="chip" data-method="DELETE" onclick="setMethod(this)">DELETE</span>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="display:flex;align-items:center;gap:5px">
+        <div class="live-dot" id="liveDot" style="width:7px;height:7px;border-radius:50%;background:#4ade80"></div>
+        <span id="liveLabel" style="font-size:11px;color:var(--pm-muted)">live</span>
       </div>
+      <span style="font-size:11px;color:var(--pm-muted)"><span id="totalCount">0</span> requests</span>
+      <button class="btn-red" onclick="clearAll()">Clear</button>
     </div>
-    <div id="requestList" style="flex:1;overflow-y:auto">
-      <div id="emptyState" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;padding:32px;text-align:center;color:var(--pm-muted)">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="opacity:.2"><circle cx="20" cy="20" r="17" stroke="currentColor" stroke-width="1.5"/><path d="M13 20l4-8 4 6 4-6 4 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <p style="font-size:12px;margin:0">Waiting for requests…</p>
-        <p style="font-size:11px;opacity:.6;margin:0">Hit any endpoint on your server to see it here.</p>
-      </div>
-    </div>
-  </div>
+  </header>
 
-  <!-- RIGHT: detail -->
-  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+  <!-- BODY -->
+  <div style="display:flex;flex:1;overflow:hidden">
 
-    <div id="detailEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--pm-muted)">
-      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="opacity:.15"><rect x="6" y="6" width="32" height="32" rx="7" stroke="currentColor" stroke-width="1.5"/><path d="M14 22H30M14 16H26M14 28H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <span style="font-size:12px">Select a request to inspect</span>
-    </div>
-
-    <div id="detailContent" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-      <div style="background:var(--pm-panel);border-bottom:1px solid var(--pm-border);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:8px;min-width:0">
-          <span id="dMethod" class="badge"></span>
-          <span id="dUrl" class="mono" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px"></span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:10px">
-          <span id="dStatus" class="mono" style="font-size:12px;font-weight:600"></span>
-          <span id="dTimestamp" style="font-size:10px;color:var(--pm-muted)"></span>
+    <!-- LEFT: list -->
+    <div
+      style="width:360px;flex-shrink:0;border-right:1px solid var(--pm-border);display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:9px 10px;border-bottom:1px solid var(--pm-border);background:var(--pm-panel);flex-shrink:0">
+        <input class="filter-input" id="searchInput" placeholder="Filter by route, method, status…"
+          oninput="applyFilters()" />
+        <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">
+          <span class="chip active" data-method="ALL" onclick="setMethod(this)">ALL</span>
+          <span class="chip" data-method="GET" onclick="setMethod(this)">GET</span>
+          <span class="chip" data-method="POST" onclick="setMethod(this)">POST</span>
+          <span class="chip" data-method="PUT" onclick="setMethod(this)">PUT</span>
+          <span class="chip" data-method="PATCH" onclick="setMethod(this)">PATCH</span>
+          <span class="chip" data-method="DELETE" onclick="setMethod(this)">DELETE</span>
         </div>
       </div>
-      <div style="display:flex;border-bottom:1px solid var(--pm-border);background:var(--pm-panel);flex-shrink:0">
-        <div class="tab active" onclick="setTab('curl',this)">cURL</div>
-        <div class="tab" onclick="setTab('headers',this)">Headers</div>
-        <div class="tab" onclick="setTab('response',this)">Response</div>
+      <div id="requestList" style="flex:1;overflow-y:auto">
+        <div id="emptyState"
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;padding:32px;text-align:center;color:var(--pm-muted)">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="opacity:.2">
+            <circle cx="20" cy="20" r="17" stroke="currentColor" stroke-width="1.5" />
+            <path d="M13 20l4-8 4 6 4-6 4 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <p style="font-size:12px;margin:0">Waiting for requests…</p>
+          <p style="font-size:11px;opacity:.6;margin:0">Hit any endpoint on your server to see it here.</p>
+        </div>
       </div>
-      <div id="tabContent" style="flex:1;overflow-y:auto;padding:16px 18px"></div>
+    </div>
+
+    <!-- RIGHT: detail -->
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+
+      <div id="detailEmpty"
+        style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--pm-muted)">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="opacity:.15">
+          <rect x="6" y="6" width="32" height="32" rx="7" stroke="currentColor" stroke-width="1.5" />
+          <path d="M14 22H30M14 16H26M14 28H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <span style="font-size:12px">Select a request to inspect</span>
+      </div>
+
+      <div id="detailContent" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+        <div
+          style="background:var(--pm-panel);border-bottom:1px solid var(--pm-border);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0">
+            <span id="dMethod" class="badge"></span>
+            <span id="dUrl" class="mono"
+              style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:10px">
+            <span id="dStatus" class="mono" style="font-size:12px;font-weight:600"></span>
+            <span id="dTimestamp" style="font-size:10px;color:var(--pm-muted)"></span>
+          </div>
+        </div>
+        <div style="display:flex;border-bottom:1px solid var(--pm-border);background:var(--pm-panel);flex-shrink:0">
+          <div class="tab active" onclick="setTab('curl',this)">cURL</div>
+          <div class="tab" onclick="setTab('headers',this)">Headers</div>
+          <div class="tab" onclick="setTab('response',this)">Response</div>
+        </div>
+        <div id="tabContent" style="flex:1;overflow-y:auto;padding:16px 18px"></div>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  // Dashboard path is injected by the server
-  const DASHBOARD_PATH = window.__CURLIT_PATH__ || '/_curlit'
+  <script>
+    // Dashboard path is injected by the server
+    const DASHBOARD_PATH = window.__CURLIT_PATH__ || '/_curlit'
 
-  let requests = []
-  let selectedId = null
-  let activeMethod = 'ALL'
-  let searchTerm = ''
-  let activeTab = 'curl'
+    let requests = []
+    let selectedId = null
+    let activeMethod = 'ALL'
+    let searchTerm = ''
+    let activeTab = 'curl'
 
-  // ── SSE ──────────────────────────────────────────────────────────────────
+    // ── SSE ──────────────────────────────────────────────────────────────────
 
-  function connect () {
-    const es = new EventSource(DASHBOARD_PATH + '/stream')
+    function connect() {
+      const es = new EventSource(DASHBOARD_PATH + '/stream')
 
-    es.onopen = () => {
-      document.getElementById('liveDot').style.background = '#4ade80'
-      document.getElementById('liveLabel').textContent = 'live'
-    }
-
-    es.onmessage = (e) => {
-      const msg = JSON.parse(e.data)
-      if (msg.type === 'init') {
-        requests = msg.data
-      } else if (msg.type === 'request') {
-        requests.unshift(msg.data)
-        if (requests.length > 200) requests.pop()
+      es.onopen = () => {
+        document.getElementById('liveDot').style.background = '#4ade80'
+        document.getElementById('liveLabel').textContent = 'live'
       }
-      renderList()
+
+      es.onmessage = (e) => {
+        const msg = JSON.parse(e.data)
+        if (msg.type === 'init') {
+          requests = msg.data
+        } else if (msg.type === 'request') {
+          requests.unshift(msg.data)
+          if (requests.length > 200) requests.pop()
+        }
+        renderList()
+      }
+
+      es.onerror = () => {
+        document.getElementById('liveDot').style.background = '#f87171'
+        document.getElementById('liveLabel').textContent = 'reconnecting…'
+        es.close()
+        setTimeout(connect, 3000)
+      }
     }
 
-    es.onerror = () => {
-      document.getElementById('liveDot').style.background = '#f87171'
-      document.getElementById('liveLabel').textContent = 'reconnecting…'
-      es.close()
-      setTimeout(connect, 3000)
-    }
-  }
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
-
-  function badgeClass (method) {
-    const m = (method || '').toUpperCase()
-    return ['GET','POST','PUT','PATCH','DELETE','HEAD'].includes(m) ? `b-${m}` : 'b-default'
-  }
-
-  function statusClass (s) {
-    if (!s) return ''
-    if (s < 300) return 's2'
-    if (s < 400) return 's3'
-    if (s < 500) return 's4'
-    return 's5'
-  }
-
-  function urlPath (u) {
-    try { const x = new URL(u); return x.pathname + x.search } catch { return u }
-  }
-
-  function esc (s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-  }
-
-  function tryFormatJson (s) {
-    try { return JSON.stringify(JSON.parse(s), null, 2) } catch { return s }
-  }
-
-  function hlCurl (c) {
-    return esc(c)
-      .replace(/^(curl)/m, '<span class="ck">$1</span>')
-      .replace(/( -X| -H| --data-raw| -d)/g, '<span class="cf">$1</span>')
-      .replace(/\b(GET|POST|PUT|PATCH|DELETE|HEAD)\b/g, '<span class="cm">$1</span>')
-      .replace(/(&lt;redacted&gt;)/g, '<span class="cr">$1</span>')
-      .replace(/(&quot;[^&\n]*&quot;)/g, '<span class="cs">$1</span>')
-  }
-
-  // ── Render ────────────────────────────────────────────────────────────────
-
-  function filtered () {
-    return requests.filter(r => {
-      const mm = activeMethod === 'ALL' || r.method === activeMethod
-      const sm = !searchTerm
-        || r.url.toLowerCase().includes(searchTerm)
-        || r.method.toLowerCase().includes(searchTerm)
-        || String(r.status).includes(searchTerm)
-      return mm && sm
-    })
-  }
-
-  function renderList () {
-    document.getElementById('totalCount').textContent = requests.length
-    const list = document.getElementById('requestList')
-    const f = filtered()
-
-    if (requests.length === 0) {
-      list.innerHTML = ''
-      list.appendChild(document.getElementById('emptyState'))
-      document.getElementById('emptyState').style.display = 'flex'
-      return
+    function badgeClass(method) {
+      const m = (method || '').toUpperCase()
+      return ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'].includes(m) ? `b-${m}` : 'b-default'
     }
 
-    if (!f.length) {
-      list.innerHTML = '<div style="padding:32px;text-align:center;font-size:12px;color:var(--pm-muted)">No requests match your filter.</div>'
-      return
+    function statusClass(s) {
+      if (!s) return ''
+      if (s < 300) return 's2'
+      if (s < 400) return 's3'
+      if (s < 500) return 's4'
+      return 's5'
     }
 
-    list.innerHTML = f.map((r, i) => `
+    function urlPath(u) {
+      try { const x = new URL(u); return x.pathname + x.search } catch { return u }
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    }
+
+    function tryFormatJson(s) {
+      try { return JSON.stringify(JSON.parse(s), null, 2) } catch { return s }
+    }
+
+    function hlCurl(c) {
+      return esc(c)
+        .replace(/^(curl)/m, '<span class="ck">$1</span>')
+        .replace(/( -X| -H| --data-raw| -d)/g, '<span class="cf">$1</span>')
+        .replace(/\b(GET|POST|PUT|PATCH|DELETE|HEAD)\b/g, '<span class="cm">$1</span>')
+        .replace(/(&lt;redacted&gt;)/g, '<span class="cr">$1</span>')
+        .replace(/(&quot;[^&\n]*&quot;)/g, '<span class="cs">$1</span>')
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
+
+    function filtered() {
+      return requests.filter(r => {
+        const mm = activeMethod === 'ALL' || r.method === activeMethod
+        const sm = !searchTerm
+          || r.url.toLowerCase().includes(searchTerm)
+          || r.method.toLowerCase().includes(searchTerm)
+          || String(r.status).includes(searchTerm)
+        return mm && sm
+      })
+    }
+
+    function renderList() {
+      document.getElementById('totalCount').textContent = requests.length
+      const list = document.getElementById('requestList')
+      const f = filtered()
+
+      if (requests.length === 0) {
+        list.innerHTML = ''
+        list.appendChild(document.getElementById('emptyState'))
+        document.getElementById('emptyState').style.display = 'flex'
+        return
+      }
+
+      if (!f.length) {
+        list.innerHTML = '<div style="padding:32px;text-align:center;font-size:12px;color:var(--pm-muted)">No requests match your filter.</div>'
+        return
+      }
+
+      list.innerHTML = f.map((r, i) => `
       <div class="req-row ${r.id === selectedId ? 'active' : ''} ${i === 0 ? 'new' : ''}"
            onclick="selectRequest('${r.id}')">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
@@ -331,133 +535,138 @@
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
             ${r.status ? `<span class="mono ${statusClass(r.status)}" style="font-size:11px;font-weight:600">${r.status}</span>` : ''}
-            <span style="font-size:10px;color:var(--pm-muted)">${new Date(r.timestamp).toLocaleTimeString('en-US',{hour12:false})}</span>
+            <span style="font-size:10px;color:var(--pm-muted)">${new Date(r.timestamp).toLocaleTimeString('en-US', { hour12: false })}</span>
           </div>
         </div>
       </div>
     `).join('')
-  }
+    }
 
-  // ── Detail panel ──────────────────────────────────────────────────────────
+    // ── Detail panel ──────────────────────────────────────────────────────────
 
-  function selectRequest (id) {
-    selectedId = id
-    const r = requests.find(x => x.id === id)
-    if (!r) return
+    function selectRequest(id) {
+      selectedId = id
+      const r = requests.find(x => x.id === id)
+      if (!r) return
 
-    renderList()
+      renderList()
 
-    document.getElementById('detailEmpty').style.display = 'none'
-    const content = document.getElementById('detailContent')
-    content.style.display = 'flex'
+      document.getElementById('detailEmpty').style.display = 'none'
+      const content = document.getElementById('detailContent')
+      content.style.display = 'flex'
 
-    const dm = document.getElementById('dMethod')
-    dm.className = `badge ${badgeClass(r.method)}`
-    dm.textContent = r.method
+      const dm = document.getElementById('dMethod')
+      dm.className = `badge ${badgeClass(r.method)}`
+      dm.textContent = r.method
 
-    document.getElementById('dUrl').textContent = r.url
+      document.getElementById('dUrl').textContent = r.url
 
-    const ds = document.getElementById('dStatus')
-    ds.className = `mono ${statusClass(r.status)}`
-    ds.textContent = r.status || '—'
+      const ds = document.getElementById('dStatus')
+      ds.className = `mono ${statusClass(r.status)}`
+      ds.textContent = r.status || '—'
 
-    document.getElementById('dTimestamp').textContent = new Date(r.timestamp).toLocaleString()
+      document.getElementById('dTimestamp').textContent = new Date(r.timestamp).toLocaleString()
 
-    renderTab(r)
-  }
+      renderTab(r)
+    }
 
-  function setTab (t, btn) {
-    activeTab = t
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'))
-    btn.classList.add('active')
-    const r = requests.find(x => x.id === selectedId)
-    if (r) renderTab(r)
-  }
+    function setTab(t, btn) {
+      activeTab = t
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      const r = requests.find(x => x.id === selectedId)
+      if (r) renderTab(r)
+    }
 
-  function renderTab (r) {
-    const el = document.getElementById('tabContent')
+    function renderTab(r) {
+      const el = document.getElementById('tabContent')
 
-    if (activeTab === 'curl') {
-      el.innerHTML = `
+      if (activeTab === 'curl') {
+        el.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-size:10px;font-weight:600;color:var(--pm-muted);text-transform:uppercase;letter-spacing:.08em">Generated cURL</span>
           <button class="btn-orange" data-copy="${esc(r.curl)}" onclick="doCopy(this)">Copy</button>
         </div>
         <div class="curl-block">${hlCurl(r.curl)}</div>`
 
-    } else if (activeTab === 'headers') {
-      const rows = Object.entries(r.headers || {})
-        .map(([k, v]) => `<div class="h-row"><div class="h-key">${esc(k)}</div><div class="h-val">${esc(String(v))}</div></div>`)
-        .join('')
-      el.innerHTML = `
+      } else if (activeTab === 'headers') {
+        const rows = Object.entries(r.headers || {})
+          .map(([k, v]) => `<div class="h-row"><div class="h-key">${esc(k)}</div><div class="h-val">${esc(String(v))}</div></div>`)
+          .join('')
+        el.innerHTML = `
         <div style="font-size:10px;font-weight:600;color:var(--pm-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Request Headers</div>
         ${rows}`
 
-    } else {
-      const body = tryFormatJson(r.responseBody || '')
-      el.innerHTML = `
+      } else {
+        const body = tryFormatJson(r.responseBody || '')
+        el.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-size:10px;font-weight:600;color:var(--pm-muted);text-transform:uppercase;letter-spacing:.08em">Response Body</span>
           <button class="btn-orange" data-copy="${esc(r.responseBody || '')}" onclick="doCopy(this)">Copy</button>
         </div>
         <div class="curl-block">${esc(body)}</div>`
+      }
     }
-  }
 
-  // ── Actions ───────────────────────────────────────────────────────────────
+    // ── Actions ───────────────────────────────────────────────────────────────
 
-  async function doCopy (btn) {
-    // Read from data-copy attribute — safe regardless of quotes, backslashes,
-    // or newlines in the curl string. getAttribute decodes &quot; back to "
-    // automatically, so clipboard receives the original unmangled text.
-    const text = btn.getAttribute('data-copy')
-    try {
-      await navigator.clipboard.writeText(text)
-      btn.textContent = '✓ Copied!'
-      btn.classList.add('copied')
-      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied') }, 1500)
-    } catch {}
-  }
+    async function doCopy(btn) {
+      // Read from data-copy attribute — safe regardless of quotes, backslashes,
+      // or newlines in the curl string. getAttribute decodes &quot; back to "
+      // automatically, so clipboard receives the original unmangled text.
+      const text = btn.getAttribute('data-copy')
+      try {
+        await navigator.clipboard.writeText(text)
+        btn.textContent = '✓ Copied!'
+        btn.classList.add('copied')
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied') }, 1500)
+      } catch { }
+    }
 
-  function clearAll () {
-    fetch(DASHBOARD_PATH + '/clear', { method: 'POST' }).then(() => {
-      requests = []
-      selectedId = null
-      document.getElementById('detailEmpty').style.display = 'flex'
-      document.getElementById('detailContent').style.display = 'none'
+    function clearAll() {
+      fetch(DASHBOARD_PATH + '/clear', { method: 'POST' }).then(() => {
+        requests = []
+        selectedId = null
+        document.getElementById('detailEmpty').style.display = 'flex'
+        document.getElementById('detailContent').style.display = 'none'
+        renderList()
+      })
+    }
+
+    function setMethod(chip) {
+      activeMethod = chip.dataset.method
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'))
+      chip.classList.add('active')
+      applyFilters()
+    }
+
+    function applyFilters() {
+      searchTerm = document.getElementById('searchInput').value.toLowerCase()
       renderList()
-    })
-  }
+    }
 
-  function setMethod (chip) {
-    activeMethod = chip.dataset.method
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'))
-    chip.classList.add('active')
-    applyFilters()
-  }
+    connect()
+  </script>
 
-  function applyFilters () {
-    searchTerm = document.getElementById('searchInput').value.toLowerCase()
-    renderList()
-  }
-
-  connect()
-</script>
-
-<footer style="background:var(--pm-panel);border-top:1px solid var(--pm-border);padding:7px 16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px">
-  <span style="font-size:11px;color:var(--pm-muted)">Built with love by</span>
-  <a href="https://github.com/DaggieBlanqx" target="_blank" rel="noopener noreferrer"
-     style="font-size:11px;font-weight:600;color:var(--pm-orange);text-decoration:none;transition:opacity .15s"
-     onmouseover="this.style.opacity=.7" onmouseout="this.style.opacity=1">
-    Daggie Blanqx
-  </a>
-  <span style="font-size:11px;color:var(--pm-muted)">·</span>
-  <a href="https://github.com/DaggieBlanqx/cUrlit" target="_blank" rel="noopener noreferrer"
-     style="font-size:11px;color:var(--pm-muted);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s"
-     onmouseover="this.style.color='var(--pm-text)'" onmouseout="this.style.color='var(--pm-muted)'">
-    <svg width="12" height="12" viewBox="0 0 98 96" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
-    cUrlit
-  </a>
-</footer>
+  <footer
+    style="background:var(--pm-panel);border-top:1px solid var(--pm-border);padding:7px 16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px">
+    <span style="font-size:11px;color:var(--pm-muted)">Built with love by</span>
+    <a href="https://github.com/DaggieBlanqx" target="_blank" rel="noopener noreferrer"
+      style="font-size:11px;font-weight:600;color:var(--pm-orange);text-decoration:none;transition:opacity .15s"
+      onmouseover="this.style.opacity=.7" onmouseout="this.style.opacity=1">
+      Daggie Blanqx
+    </a>
+    <span style="font-size:11px;color:var(--pm-muted)">·</span>
+    <a href="https://github.com/DaggieBlanqx/cUrlit" target="_blank" rel="noopener noreferrer"
+      style="font-size:11px;color:var(--pm-muted);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s"
+      onmouseover="this.style.color='var(--pm-text)'" onmouseout="this.style.color='var(--pm-muted)'">
+      <svg width="12" height="12" viewBox="0 0 98 96" fill="currentColor">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" />
+      </svg>
+      cUrlit
+    </a>
+  </footer>
 </body>
+
 </html>
