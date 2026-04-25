@@ -5,7 +5,7 @@
     "main": "index.js",
     "exports": "./index.js",
     "bin": {
-        "curlit-proxy": "./src/proxy/cli.js"
+        "curlit-proxy": "src/proxy/cli.js"
     },
     "type": "module",
     "files": [
