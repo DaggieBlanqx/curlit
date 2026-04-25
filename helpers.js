@@ -28,9 +28,6 @@ export function buildCurlCommand (req, options) {
   const { redactedHeaders } = options
   const lines = [`curl -X ${req.method}`]
 
-  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
-  lines.push(`  "${shellEscapeDouble(fullUrl)}"`)
-
   for (const [header, value] of Object.entries(req.headers)) {
     const lowerHeader = header.toLowerCase()
     const displayValue = redactedHeaders.has(lowerHeader)
@@ -47,11 +44,13 @@ export function buildCurlCommand (req, options) {
     }
   }
 
+  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+  lines.push(`  "${shellEscapeDouble(fullUrl)}"`)
+
   return lines
     .map((line, i) => (i < lines.length - 1 ? `${line} \\` : line))
     .join('\n')
 }
-
 /**
  * Format a response body for console display.
  * Truncates if over the configured limit.
