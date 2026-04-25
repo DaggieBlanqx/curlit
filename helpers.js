@@ -26,9 +26,10 @@ export function serializeBody (body) {
  */
 export function buildCurlCommand (req, options) {
   const { redactedHeaders } = options
-  const isWindows = process.platform === 'win32'
-  const continuation = isWindows ? ' `' : ' \\'
-  const lines = [`curl -X ${req.method}`]
+  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+
+  // URL goes on the first line, right after the method
+  const lines = [`curl -X ${req.method} "${shellEscapeDouble(fullUrl)}"`]
 
   for (const [header, value] of Object.entries(req.headers)) {
     const lowerHeader = header.toLowerCase()
@@ -42,15 +43,13 @@ export function buildCurlCommand (req, options) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     const data = serializeBody(req.body)
     if (data !== null) {
-      lines.push(`  --data-raw "${shellEscapeDouble(data)}"`)
+      // Single-quoted -d instead of --data-raw, matches the target format
+      lines.push(`  -d '${data}'`)
     }
   }
 
-  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`
-  lines.push(`  "${shellEscapeDouble(fullUrl)}"`)
-
   return lines
-    .map((line, i) => (i < lines.length - 1 ? `${line}${continuation}` : line))
+    .map((line, i) => (i < lines.length - 1 ? `${line} \\` : line))
     .join('\n')
 }
 
