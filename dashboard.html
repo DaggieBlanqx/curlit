@@ -370,10 +370,11 @@
     const el = document.getElementById('tabContent')
 
     if (activeTab === 'curl') {
+      const stringCurl = JSON.stringify(r.curl);
       el.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-size:10px;font-weight:600;color:var(--pm-muted);text-transform:uppercase;letter-spacing:.08em">Generated cURL</span>
-          <button class="btn-orange" onclick="doCopy(this, ${JSON.stringify(r.curl)})">Copy</button>
+          <button class="btn-orange" onclick="doCopy(this, ${stringCurl})">Copy</button>
         </div>
         <div class="curl-block">${hlCurl(r.curl)}</div>`
 
