@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import express from 'express'
-import curlit from './index.js'
+import curlit from '../index.js'
 import { createProxy } from './proxy.js'
 
 // ── Argument parsing ─────────────────────────────────────────────────────────
