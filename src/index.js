@@ -55,7 +55,9 @@ function curlit (userOptions = {}) {
         ? resolvedBody
         : Buffer.isBuffer(resolvedBody)
           ? resolvedBody.toString()
-          : JSON.stringify(resolvedBody)
+          : resolvedBody
+            ? JSON.stringify(resolvedBody)
+            : '(empty)'
 
       // Push to ring buffer for the dashboard
       buffer.push({
@@ -80,10 +82,20 @@ function curlit (userOptions = {}) {
       logger(output)
     }
 
-    // Patch res.send (covers res.json and most normal responses)
+    // Guard against double capture — whichever of res.send or res.end
+    // fires first sets this to true so the other one skips capture.
+    // This matters in proxy mode where http-proxy-middleware calls res.end
+    // directly, and in normal Express mode where res.send internally
+    // calls res.end after already having called capture.
+    let captured = false
+
+    // Patch res.send (covers res.json and most normal Express responses)
     const originalSend = res.send.bind(res)
     res.send = function (body) {
-      capture(body)
+      if (!captured) {
+        captured = true
+        capture(body)
+      }
       return originalSend(body)
     }
 
@@ -91,9 +103,8 @@ function curlit (userOptions = {}) {
     // bypassing res.send entirely)
     const originalEnd = res.end.bind(res)
     res.end = function (chunk, encoding, callback) {
-      // Only capture here if res.send hasn't already fired.
-      // res.send internally calls res.end, so we guard against double capture.
-      if (res.send === originalSend) {
+      if (!captured) {
+        captured = true
         capture(chunk)
       }
       return originalEnd(chunk, encoding, callback)
