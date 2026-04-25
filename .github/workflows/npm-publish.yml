@@ -165,9 +165,15 @@ jobs:
     needs: detect
     if: needs.detect.outputs.step != 'none'
     runs-on: ubuntu-latest
+    # environment must match the trusted publisher config on npmjs.com exactly.
+    # npm validates the OIDC token against this environment name — if it differs,
+    # the token is rejected and publish fails with a 404.
+    environment: Staging Environment
 
     permissions:
       contents: write
+      # Required for OIDC trusted publishing — allows GitHub to issue a
+      # short-lived token that npm accepts without any NPM_TOKEN secret.
       id-token: write
 
     env:
@@ -276,5 +282,6 @@ jobs:
       # Prerequisite: configure curlit as a Trusted Publisher on npmjs.com:
       #   npmjs.com → curlit → Settings → Trusted Publishers → GitHub Actions
       #   Owner: DaggieBlanqx | Repo: curlit | Workflow: npm-publish.yml
+      #   Environment: Staging Environment
       - name: Publish to npm
         run: npm publish --access public
