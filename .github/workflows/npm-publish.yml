@@ -21,12 +21,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: "24"
           cache: npm
           registry-url: https://registry.npmjs.org/
 
@@ -69,14 +69,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: "24"
           cache: npm
           registry-url: https://registry.npmjs.org/
 
@@ -165,6 +165,7 @@ jobs:
     needs: detect
     if: needs.detect.outputs.step != 'none'
     runs-on: ubuntu-latest
+
     # environment must match the trusted publisher config on npmjs.com exactly.
     # npm validates the OIDC token against this environment name — if it differs,
     # the token is rejected and publish fails with a 404.
@@ -182,14 +183,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: "24"
           cache: npm
           registry-url: https://registry.npmjs.org/
 
@@ -208,7 +209,7 @@ jobs:
         if: env.RESUME_STEP == 'bump' || env.RESUME_STEP == 'tag'
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       # ── Step 1: Bump package.json ─────────────────────────────────────────
       - name: Bump package.json
@@ -283,5 +284,16 @@ jobs:
       #   npmjs.com → curlit → Settings → Trusted Publishers → GitHub Actions
       #   Owner: DaggieBlanqx | Repo: curlit | Workflow: npm-publish.yml
       #   Environment: Staging Environment
+
+      - name: Debug OIDC context
+        run: |
+          echo "Repository : ${{ github.repository }}"
+          echo "Workflow   : ${{ github.workflow }}"
+          echo "Environment: Staging Environment"
+          echo "Ref        : ${{ github.ref }}"
+
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
+
       - name: Publish to npm
         run: npm publish --access public
