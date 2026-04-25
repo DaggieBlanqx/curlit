@@ -4,14 +4,20 @@
     "description": "Stop documenting your API manually. cUrlit is an Express middleware that intercepts every request and generates a ready-to-run cURL command — complete with a live browser dashboard. Copy, replay, and export your entire API as a Postman collection in one click.",
     "main": "index.js",
     "exports": "./index.js",
+    "bin": {
+        "curlit-proxy": "./src/proxy/cli.js"
+    },
     "type": "module",
     "files": [
         "index.js",
-        "defaults.js",
-        "helpers.js",
-        "ring-buffer.js",
-        "dashboard.js",
-        "dashboard.html",
+        "src/index.js",
+        "src/defaults.js",
+        "src/helpers.js",
+        "src/ring-buffer.js",
+        "src/dashboard/dashboard.js",
+        "src/dashboard/dashboard.html",
+        "src/proxy/proxy.js",
+        "src/proxy/cli.js",
         "README.md",
         "LICENSE"
     ],
@@ -23,6 +29,10 @@
             "**/.trash/*"
         ]
     },
+    "dependencies": {
+        "express": "^4.18.0",
+        "http-proxy-middleware": "^3.0.0"
+    },
     "keywords": [
         "express",
         "middleware",
@@ -31,7 +41,14 @@
         "logging",
         "debug",
         "postman",
-        "dashboard"
+        "dashboard",
+        "proxy",
+        "php",
+        "laravel",
+        "django",
+        "rails",
+        "kotlin",
+        "spring"
     ],
     "repository": {
         "type": "git",

@@ -51,6 +51,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # Required for OIDC trusted publishing — allows GitHub Actions to
+      # request a short-lived OIDC token from npm instead of using a
+      # long-lived NPM_TOKEN secret. No token storage or rotation needed.
       id-token: write
     steps:
       - uses: actions/checkout@v4
@@ -81,11 +84,15 @@ jobs:
           git push origin main
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-      # ── Publish to npm ────────────────────────────────────────────────────
+      # ── Publish to npm via OIDC trusted publishing ────────────────────────
+      # No NODE_AUTH_TOKEN needed — npm detects the OIDC environment
+      # automatically and exchanges the GitHub token for a short-lived
+      # publish credential. Provenance is generated automatically.
+      # Prerequisites: configure curlit as a trusted publisher on npmjs.com:
+      #   npmjs.com → curlit package → Settings → Trusted Publishers
+      #   → Add: GitHub Actions, daggieblanqx, curlit, npm-publish.yml
       - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_IN_GITHUB_ACTIONS }}
+        run: npm publish --access public
 
       # ── Generate release notes from commits since last tag ────────────────
       - name: Generate release notes
