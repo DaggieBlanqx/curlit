@@ -12,7 +12,10 @@ export function createProxy (target, options = {}) {
     target,
     changeOrigin: true,
     ws: true, // forward WebSocket upgrades too
-    selfHandleResponse: false, // let http-proxy-middleware handle sending
+
+    // We handle the response ourselves so we can buffer the body
+    // and store it for cUrlit to capture before sending to the client.
+    selfHandleResponse: true,
 
     on: {
       proxyReq (proxyReq, req) {
@@ -43,21 +46,32 @@ export function createProxy (target, options = {}) {
       },
 
       proxyRes (proxyRes, req, res) {
-        // Collect the response body chunks as they stream in
+        // Buffer the full response body before sending to the client.
+        // With selfHandleResponse: true we own the response entirely —
+        // http-proxy-middleware has not written anything yet.
         const chunks = []
         proxyRes.on('data', (chunk) => chunks.push(chunk))
         proxyRes.on('end', () => {
-          const body = Buffer.concat(chunks).toString('utf8')
+          const body = Buffer.concat(chunks)
+          const bodyStr = body.toString('utf8')
 
-          // Forward status and headers
-          res.status(proxyRes.statusCode)
+          // Write status
+          res.statusCode = proxyRes.statusCode
+
+          // Forward headers — skip transfer-encoding since we're sending
+          // the full buffered body, not a chunked stream
           Object.entries(proxyRes.headers).forEach(([key, value]) => {
+            if (key.toLowerCase() === 'transfer-encoding') return
             if (value !== undefined) res.setHeader(key, value)
           })
 
-          // Call res.send so cUrlit's existing patch captures the body
-          // and logs it — this is the single source of truth for the response
-          res.send(body)
+          // Stash the body string on req so cUrlit's capture function
+          // can read it — res.end triggers cUrlit's patched res.end,
+          // but the raw Buffer argument isn't as useful as the string
+          req.__curlitProxyBody = bodyStr
+
+          // End the response — this triggers cUrlit's patched res.end
+          res.end(body)
         })
       },
 

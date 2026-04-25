@@ -44,12 +44,18 @@ function curlit (userOptions = {}) {
     const timestamp = new Date().toISOString()
 
     function capture (body) {
+      // In proxy mode, http-proxy-middleware uses res.end directly and never
+      // calls res.send — so the body argument here may be a raw Buffer or
+      // empty. proxy.js stashes the decoded string on req.__curlitProxyBody
+      // just before calling res.end so we can read it here instead.
+      const resolvedBody = req.__curlitProxyBody || body
+
       const curl = buildCurlCommand(req, options)
-      const responseBody = typeof body === 'string'
-        ? body
-        : Buffer.isBuffer(body)
-          ? body.toString()
-          : JSON.stringify(body)
+      const responseBody = typeof resolvedBody === 'string'
+        ? resolvedBody
+        : Buffer.isBuffer(resolvedBody)
+          ? resolvedBody.toString()
+          : JSON.stringify(resolvedBody)
 
       // Push to ring buffer for the dashboard
       buffer.push({
@@ -68,7 +74,7 @@ function curlit (userOptions = {}) {
       let output = `\n${sep}\n[curlit] ${timestamp}\n${sep}\n\n${curl}\n`
       if (logResponseBody) {
         output += `\n── Response (${res.statusCode}) ${'─'.repeat(40)}\n`
-        output += formatResponseBody(body, maxBodyLength) + '\n'
+        output += formatResponseBody(resolvedBody, maxBodyLength) + '\n'
       }
       output += sep
       logger(output)
@@ -81,11 +87,13 @@ function curlit (userOptions = {}) {
       return originalSend(body)
     }
 
-    // Patch res.end (covers raw end() calls that bypass res.send)
+    // Patch res.end (covers proxy responses which call res.end directly,
+    // bypassing res.send entirely)
     const originalEnd = res.end.bind(res)
     res.end = function (chunk, encoding, callback) {
-      if (res.send !== originalSend) {
-        // res.send hasn't fired yet — log here
+      // Only capture here if res.send hasn't already fired.
+      // res.send internally calls res.end, so we guard against double capture.
+      if (res.send === originalSend) {
         capture(chunk)
       }
       return originalEnd(chunk, encoding, callback)
