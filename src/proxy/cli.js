@@ -69,6 +69,8 @@ app.use('/', createProxy(target))
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 
+const connections = new Set()
+
 const server = app.listen(port, () => {
   const dashboardUrl = `http://localhost:${port}${dashboardPath}`
   const proxyUrl = `http://localhost:${port}`
@@ -85,16 +87,32 @@ const server = app.listen(port, () => {
   console.log('  Press Ctrl+C to stop.\n')
 })
 
+// Track all open connections so we can destroy them on shutdown.
+// SSE streams from the dashboard are long-lived and would otherwise
+// prevent server.close() from ever calling its callback.
+server.on('connection', (socket) => {
+  connections.add(socket)
+  socket.on('close', () => connections.delete(socket))
+})
+
 // Forward WebSocket upgrades
 server.on('upgrade', createProxy(target).upgrade)
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 
-process.on('SIGINT', () => {
+function shutdown () {
   console.log('\n\n  [curlit-proxy] Shutting down...\n')
-  server.close(() => process.exit(0))
-})
 
-process.on('SIGTERM', () => {
+  // Destroy all open connections — including hanging SSE streams
+  for (const socket of connections) {
+    socket.destroy()
+  }
+
   server.close(() => process.exit(0))
-})
+
+  // Force exit after 3s if something still won't let go
+  setTimeout(() => process.exit(0), 3000).unref()
+}
+
+process.on('SIGINT', shutdown)
+process.on('SIGTERM', shutdown)

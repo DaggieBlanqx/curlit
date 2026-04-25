@@ -1,6 +1,9 @@
-# cUrlit: Turn live traffic into a Postman collection, and watch it build itself
+# cUrlit
 
-<img src="https://img.shields.io/npm/v/curlit" alt="cUrlit version"/> <img src="https://img.shields.io/npm/dw/curlit" alt="cUrlit weekly downloads"/> <img src="https://img.shields.io/github/stars/DaggieBlanqx/curlit?style=social" alt="GitHub stars"/> <img src="https://img.shields.io/badge/works%20with-any%20backend-FF6C37" alt="Works with any backend"/>
+## Watch your Postman collection build itself from live traffic
+
+
+<img src="https://img.shields.io/npm/v/curlit" alt="cUrlit version"/> <img src="https://img.shields.io/npm/dw/curlit" alt="cUrlit weekly downloads"/> <img src="https://img.shields.io/github/stars/DaggieBlanqx/curlit?style=social" alt="GitHub stars"/> <img src="https://img.shields.io/badge/works%20with-any%20backend-FF6C37" alt="Works with any backend server"/>
 <br/>
 
 > **Stop documenting your API manually.**
