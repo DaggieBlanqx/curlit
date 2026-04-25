@@ -1,4 +1,4 @@
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware, responseInterceptor } from 'http-proxy-middleware'
 
 /**
  * Create a proxy middleware that forwards all requests to the target server.
@@ -12,7 +12,7 @@ export function createProxy (target, options = {}) {
     target,
     changeOrigin: true,
     ws: true, // forward WebSocket upgrades too
-    selfHandleResponse: false,
+    selfHandleResponse: true, // we handle writing the response ourselves
 
     on: {
       proxyReq (proxyReq, req) {
@@ -41,6 +41,27 @@ export function createProxy (target, options = {}) {
         proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
         proxyReq.write(bodyData)
       },
+
+      // responseInterceptor lets us read the full response body before
+      // sending it to the client — so res.send gets called with the real body
+      // and cUrlit's patch captures it correctly.
+      proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+        const body = responseBuffer.toString('utf8')
+
+        // Forward all headers from the proxied response
+        Object.entries(proxyRes.headers).forEach(([key, value]) => {
+          if (value !== undefined) res.setHeader(key, value)
+        })
+
+        res.status(proxyRes.statusCode)
+
+        // Call res.send so cUrlit's patch captures the body
+        res.send(body)
+
+        // responseInterceptor expects a return value — return empty string
+        // since we already called res.send manually above
+        return ''
+      }),
 
       error (err, req, res) {
         console.error(`[curlit-proxy] Failed to proxy ${req.method} ${req.url} → ${target}`)
