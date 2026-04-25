@@ -2,16 +2,10 @@
 
 
 <!-- Package -->
-<img src="https://img.shields.io/npm/v/curlit" alt="Version"/>
-<img src="https://img.shields.io/npm/dt/curlit" alt="Total downloads"/>
-<img src="https://img.shields.io/node/v/curlit" alt="Node version"/>
-<img src="https://img.shields.io/npm/l/curlit" alt="License"/>
-<img src="https://img.shields.io/badge/works%20with-any%20backend-FF6C37" alt="Works with any backend"/>
+<img src="https://img.shields.io/npm/v/curlit" alt="Version"/> <img src="https://img.shields.io/npm/dt/curlit" alt="Total downloads"/> <img src="https://img.shields.io/node/v/curlit" alt="Node version"/> <img src="https://img.shields.io/npm/l/curlit" alt="License"/> <img src="https://img.shields.io/badge/works%20with-any%20backend-FF6C37" alt="Works with any backend"/>
 
 <!-- Quality -->
-<img src="https://img.shields.io/github/actions/workflow/status/DaggieBlanqx/curlit/npm-publish.yml?label=publish" alt="Publish status"/>
-<img src="https://img.shields.io/badge/provenance-verified-brightgreen" alt="Provenance verified"/>
-<img src="https://img.shields.io/github/issues/DaggieBlanqx/curlit" alt="GitHub issues"/>
+<img src="https://img.shields.io/github/actions/workflow/status/DaggieBlanqx/curlit/npm-publish.yml?label=publish" alt="Publish status"/> <img src="https://img.shields.io/badge/provenance-verified-brightgreen" alt="Provenance verified"/> <img src="https://img.shields.io/github/issues/DaggieBlanqx/curlit" alt="GitHub issues"/>
 
 <!-- Community -->
 <!-- npm card — rich visual, shows downloads graph and install command -->
