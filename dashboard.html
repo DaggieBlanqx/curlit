@@ -112,7 +112,7 @@
     .chip {
       font-size: 10px; padding: 2px 9px; border-radius: 20px;
       border: 1px solid var(--pm-border); color: var(--pm-muted);
-      cursor: pointer; transition: all .12s; white-space: nowrap;
+      cursor: pointer; transition: all .12px; white-space: nowrap;
     }
     .chip.active { background: var(--pm-orange); color: #fff; border-color: var(--pm-orange); }
 
@@ -370,11 +370,10 @@
     const el = document.getElementById('tabContent')
 
     if (activeTab === 'curl') {
-      const stringCurl = JSON.stringify(r.curl);
       el.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-size:10px;font-weight:600;color:var(--pm-muted);text-transform:uppercase;letter-spacing:.08em">Generated cURL</span>
-          <button class="btn-orange" onclick="doCopy(this, ${stringCurl})">Copy</button>
+          <button class="btn-orange" data-copy="${esc(r.curl)}" onclick="doCopy(this)">Copy</button>
         </div>
         <div class="curl-block">${hlCurl(r.curl)}</div>`
 
@@ -391,7 +390,7 @@
       el.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-size:10px;font-weight:600;color:var(--pm-muted);text-transform:uppercase;letter-spacing:.08em">Response Body</span>
-          <button class="btn-orange" onclick="doCopy(this, ${JSON.stringify(r.responseBody || '')})">Copy</button>
+          <button class="btn-orange" data-copy="${esc(r.responseBody || '')}" onclick="doCopy(this)">Copy</button>
         </div>
         <div class="curl-block">${esc(body)}</div>`
     }
@@ -399,7 +398,11 @@
 
   // ── Actions ───────────────────────────────────────────────────────────────
 
-  async function doCopy (btn, text) {
+  async function doCopy (btn) {
+    // Read from data-copy attribute — safe regardless of quotes, backslashes,
+    // or newlines in the curl string. getAttribute decodes &quot; back to "
+    // automatically, so clipboard receives the original unmangled text.
+    const text = btn.getAttribute('data-copy')
     try {
       await navigator.clipboard.writeText(text)
       btn.textContent = '✓ Copied!'
