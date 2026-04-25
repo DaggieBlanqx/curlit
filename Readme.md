@@ -1,14 +1,32 @@
-# cUrlit
+# cUrlit — watch your Postman collection build itself
 
-## Watch your Postman collection build itself from live traffic
+<!-- npm card — rich visual, shows downloads graph and install command -->
 
+[![](https://nodei.co/npm/curlit.png)](https://npmjs.com/package/curlit)
 
-<img src="https://img.shields.io/npm/v/curlit" alt="cUrlit version"/> <img src="https://img.shields.io/npm/dw/curlit" alt="cUrlit weekly downloads"/> <img src="https://img.shields.io/github/stars/DaggieBlanqx/curlit?style=social" alt="GitHub stars"/> <img src="https://img.shields.io/badge/works%20with-any%20backend-FF6C37" alt="Works with any backend server"/>
+<!-- Package -->
+<img src="https://img.shields.io/npm/dt/curlit" alt="Total downloads"/>
+<img src="https://img.shields.io/node/v/curlit" alt="Node version"/>
+<img src="https://img.shields.io/npm/l/curlit" alt="License"/>
+
+<!-- Quality -->
+<img src="https://img.shields.io/github/actions/workflow/status/DaggieBlanqx/curlit/npm-publish.yml?label=publish" alt="Publish status"/>
+<img src="https://img.shields.io/badge/provenance-verified-brightgreen" alt="Provenance verified"/>
+<img src="https://img.shields.io/github/issues/DaggieBlanqx/curlit" alt="GitHub issues"/>
+
+[![Sponsor](https://img.shields.io/github/sponsors/DaggieBlanqx?label=Sponsor&logo=GitHub)](https://github.com/sponsors/DaggieBlanqx)
+<img src="https://img.shields.io/npm/v/curlit" alt="Version"/>
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/daggieblanqx?style=social)](https://twitter.com/daggieblanqx)
+<img src="https://img.shields.io/badge/works%20with-any%20backend-GREEN" alt="Works with any backend"/>
+
 <br/>
 
-> **Stop documenting your API manually.**
-> cUrlit intercepts every request hitting your server and turns it into a ready-to-run cURL command — live, in the browser, with one-click Postman export.
-> **No config. No account. No API key.**
+> **Watch your Postman collection build itself.**
+
+> cUrlit sits between your client and server, captures every request then gives you a Postman Collection.
+
+> No config. No account. No API key. No AI.
 
 ---
 
@@ -16,48 +34,20 @@
 
 ---
 
-## The problem
-
-You've just spent three days building an API. Your client wants a Postman collection by Friday. You open Postman and stare at a blank screen — every endpoint needs to be typed in manually. The auth headers. The request bodies. The query params. All of it.
-
-You have better things to do.
-
-## The solution
-
-Install cUrlit. Hit your endpoints once while you test. Click Export.
-
-Your entire Postman collection is ready. In the time it took to read this sentence.
-
----
-
-## Up and running in 30 seconds
-
-```bash
-npm install curlit
-```
-
-```js
-import curlit from 'curlit'
-app.use(curlit())
-```
-
-Open **http://localhost:3000/_curlit** — your live dashboard is ready.
-Now, as requests hit your endpoint, your postman collection gradually builds itself. Once satisfies, click on the EXPORT button to save it.
-
-That's it. No config, no account, no API key.
-
 ---
 
 ## Works with any backend
 
-Not using Express? No problem. cUrlit ships a standalone proxy that sits in front of **any server** — PHP, Laravel, Django, Rails, Kotlin, Go, anything.
+Not using Express? No problem. 
+
+cUrlit ships a standalone proxy that sits in front of **any server** — PHP, Laravel, Django, Rails, Kotlin, Go, anything.
 
 ```bash
 # Install once
 npm install -g curlit
 
 # Proxy any server — no code changes required
-curlit-proxy --target http://localhost:8080
+curlit-proxy --target http://localhost:8080 --port 3000
 ```
 
 ```
@@ -66,30 +56,54 @@ Your client(mobile app/browser) → http://localhost:3000 (cUrlit in the middle)
 
 Every request is captured. Your server never knows the difference.
 
+Open **http://localhost:3000/\_curlit** — your live dashboard is ready.
+
+Now, as requests hit your endpoint, your postman collection gradually builds itself. Once satisfies, click on the EXPORT button to save it.
+
+That's it. No config, no account, no API key.
+
+
 ### Works with every stack
 
 ```bash
 curlit-proxy --target http://localhost:8080   # PHP / Laravel / Kotlin / Spring
 curlit-proxy --target http://localhost:8000   # Django / FastAPI
-curlit-proxy --target http://localhost:3000 --port 4000  # Rails
+curlit-proxy --target http://localhost:9000 --port 3000  # Rails
 curlit-proxy --target http://localhost:9090   # Go
 curlit-proxy --target https://staging.myapp.com  # Remote staging
 ```
 
 ---
 
+
+  ## (Optional for Expressjs Fans) Add it as middleware
+
+  ```bash
+  npm install curlit
+  ```
+
+  ```js
+  import curlit from "curlit";
+  app.use(curlit());
+  ```
+----
+
+
+
+
+
 ## Why cUrlit?
 
-|                             | cUrlit | Manual logging | Postman Interceptor |
-|-----------------------------|--------|----------------|---------------------|
-| Zero config                 | ✅     | ❌             | ❌                  |
-| Live browser dashboard      | ✅     | ❌             | ✅                  |
-| One-click Postman export    | ✅     | ❌             | ✅                  |
-| Works with Express          | ✅     | ✅             | ❌                  |
-| Works with ANY backend      | ✅     | ❌             | ❌                  |
-| Sensitive header redaction  | ✅     | ❌             | ❌                  |
-| Open source                 | ✅     | ✅             | ❌                  |
-| One line to install         | ✅     | ❌             | ❌                  |
+|                            | cUrlit | Manual logging | Postman Interceptor |
+| -------------------------- | ------ | -------------- | ------------------- |
+| Zero config                | ✅     | ❌             | ❌                  |
+| Live browser dashboard     | ✅     | ❌             | ✅                  |
+| One-click Postman export   | ✅     | ❌             | ✅                  |
+| Works with Express         | ✅     | ✅             | ❌                  |
+| Works with ANY backend     | ✅     | ❌             | ❌                  |
+| Sensitive header redaction | ✅     | ❌             | ❌                  |
+| Open source                | ✅     | ✅             | ❌                  |
+| One line to install        | ✅     | ❌             | ❌                  |
 
 ---
 
@@ -129,10 +143,10 @@ http://localhost:3000/_curlit
 
 ```js
 // Disable the dashboard
-app.use(curlit({ dashboard: false }))
+app.use(curlit({ dashboard: false }));
 
 // Custom path
-app.use(curlit({ dashboardPath: '/_debug' }))
+app.use(curlit({ dashboardPath: "/_debug" }));
 ```
 
 > The dashboard **never mounts in production** unless you explicitly pass `enabledEnvs: null`. It is a development tool.
@@ -158,22 +172,22 @@ Response captured → ring buffer updated → dashboard updated live
 ## Full Express example
 
 ```js
-import express from 'express'
-import curlit from 'curlit'
+import express from "express";
+import curlit from "curlit";
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(curlit())
+app.use(express.json());
+app.use(curlit());
 
-app.get('/api/users', (req, res) => {
-  res.json({ users: [] })
-})
+app.get("/api/users", (req, res) => {
+  res.json({ users: [] });
+});
 
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000')
-  console.log('Dashboard at http://localhost:3000/_curlit')
-})
+  console.log("Server running on http://localhost:3000");
+  console.log("Dashboard at http://localhost:3000/_curlit");
+});
 ```
 
 ---
@@ -229,24 +243,36 @@ curlit/
 All options are optional. `curlit()` with no arguments uses sensible defaults.
 
 ```js
-app.use(curlit({
-  enabledEnvs:     ['development', 'test'], // environments where logging is active
-  maxBodyLength:   4096,                    // truncate response bodies larger than this (bytes)
-  logResponseBody: true,                    // set to false to only log the curl command
-  dashboard:       true,                    // serve the live dashboard
-  dashboardPath:   '/_curlit',             // URL the dashboard is mounted at
-  bufferSize:      200,                     // max requests kept in memory for the dashboard
-  redactedHeaders: new Set([               // values replaced with <redacted>
-    'authorization', 'cookie', 'set-cookie',
-    'x-api-key', 'x-auth-token', 'proxy-authorization',
-  ]),
-  autoHeaders: new Set([                   // noise headers stripped from curl output
-    'host', 'user-agent', 'accept',
-    'accept-encoding', 'connection',
-    'content-length', 'transfer-encoding',
-  ]),
-  logger: console.log,                     // swap in pino, winston, etc.
-}))
+app.use(
+  curlit({
+    enabledEnvs: ["development", "test"], // environments where logging is active
+    maxBodyLength: 4096, // truncate response bodies larger than this (bytes)
+    logResponseBody: true, // set to false to only log the curl command
+    dashboard: true, // serve the live dashboard
+    dashboardPath: "/_curlit", // URL the dashboard is mounted at
+    bufferSize: 200, // max requests kept in memory for the dashboard
+    redactedHeaders: new Set([
+      // values replaced with <redacted>
+      "authorization",
+      "cookie",
+      "set-cookie",
+      "x-api-key",
+      "x-auth-token",
+      "proxy-authorization",
+    ]),
+    autoHeaders: new Set([
+      // noise headers stripped from curl output
+      "host",
+      "user-agent",
+      "accept",
+      "accept-encoding",
+      "connection",
+      "content-length",
+      "transfer-encoding",
+    ]),
+    logger: console.log, // swap in pino, winston, etc.
+  }),
+);
 ```
 
 ---
@@ -256,19 +282,19 @@ app.use(curlit({
 ### Zero config
 
 ```js
-app.use(curlit())
+app.use(curlit());
 ```
 
 ### Dashboard only, silent console
 
 ```js
-app.use(curlit({ logger: () => {} }))
+app.use(curlit({ logger: () => {} }));
 ```
 
 ### Force on in all environments
 
 ```js
-app.use(curlit({ enabledEnvs: null }))
+app.use(curlit({ enabledEnvs: null }));
 ```
 
 > **Warning:** this logs all request bodies and URLs. Only use this for short-lived debugging sessions.
@@ -276,36 +302,40 @@ app.use(curlit({ enabledEnvs: null }))
 ### Custom sensitive headers
 
 ```js
-import curlit, { DEFAULT_REDACTED_HEADERS } from 'curlit'
+import curlit, { DEFAULT_REDACTED_HEADERS } from "curlit";
 
-app.use(curlit({
-  redactedHeaders: new Set([...DEFAULT_REDACTED_HEADERS, 'x-tenant-id'])
-}))
+app.use(
+  curlit({
+    redactedHeaders: new Set([...DEFAULT_REDACTED_HEADERS, "x-tenant-id"]),
+  }),
+);
 ```
 
 ### Custom auto-stripped headers
 
 ```js
-import curlit, { DEFAULT_AUTO_HEADERS } from 'curlit'
+import curlit, { DEFAULT_AUTO_HEADERS } from "curlit";
 
-app.use(curlit({
-  autoHeaders: new Set([...DEFAULT_AUTO_HEADERS, 'x-forwarded-for'])
-}))
+app.use(
+  curlit({
+    autoHeaders: new Set([...DEFAULT_AUTO_HEADERS, "x-forwarded-for"]),
+  }),
+);
 ```
 
 ### Route-scoped
 
 ```js
-const curlLogger = curlit({ logResponseBody: false })
-app.post('/webhooks', curlLogger, (req, res) => res.sendStatus(200))
+const curlLogger = curlit({ logResponseBody: false });
+app.post("/webhooks", curlLogger, (req, res) => res.sendStatus(200));
 ```
 
 ### Custom logger (Pino)
 
 ```js
-import pino from 'pino'
-const logger = pino()
-app.use(curlit({ logger: (msg) => logger.debug({ msg }, 'curlit') }))
+import pino from "pino";
+const logger = pino();
+app.use(curlit({ logger: (msg) => logger.debug({ msg }, "curlit") }));
 ```
 
 ### Proxy CLI options
