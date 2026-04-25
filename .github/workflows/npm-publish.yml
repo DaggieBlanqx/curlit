@@ -10,22 +10,112 @@ jobs:
     runs-on: ubuntu-latest
     environment: Staging Environment
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: npm i
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - run: npm run lint
-  publish-npm:
+
+  check-version:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
+
+      - name: Check if version changed vs published
+        id: check
+        run: |
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          PUBLISHED_VERSION=$(npm view $(node -p "require('./package.json').name") version 2>/dev/null || echo "0.0.0")
+          echo "Local: $LOCAL_VERSION — Published: $PUBLISHED_VERSION"
+          if [ "$LOCAL_VERSION" != "$PUBLISHED_VERSION" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+  publish-npm:
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history needed for release notes generation
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
           registry-url: https://registry.npmjs.org/
-      - run: npm i
-      - run: npm publish
+          cache: npm
+
+      - run: npm ci
+
+      # ── Bump version in package.json and commit it back ───────────────────
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump patch version
+        run: |
+          npm version patch --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to v$NEW_VERSION [skip ci]"
+          git push origin main
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # ── Publish to npm ────────────────────────────────────────────────────
+      - name: Publish to npm
+        run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_IN_GITHUB_ACTIONS}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_IN_GITHUB_ACTIONS }}
+
+      # ── Generate release notes from commits since last tag ────────────────
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" -20)
+          else
+            COMMITS=$(git log "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)")
+          fi
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$COMMITS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      # ── Create GitHub release and tag ─────────────────────────────────────
+      - name: Create GitHub release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = process.env.NEW_VERSION
+            const notes = process.env.RELEASE_NOTES
+
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${version}`,
+              name: `v${version}`,
+              body: `## What's changed\n\n${notes}\n\n---\n📦 [View on npm](https://www.npmjs.com/package/curlit/v/${version})`,
+              draft: false,
+              prerelease: false,
+              generate_release_notes: false
+            })
