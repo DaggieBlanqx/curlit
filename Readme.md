@@ -32,6 +32,20 @@
 
 ---
 
+## Table of contents
+
+- [Pick your setup](#pick-your-setup)
+  - [Express middleware](#-mode-1--express-middleware)
+  - [Standalone proxy](#-mode-2--standalone-proxy)
+- [How it works](#how-it-works)
+- [Why cUrlit](#why-curlit)
+- [Use cases](#use-cases)
+- [What you can do with it](#what-you-can-do-with-it)
+- [Live dashboard](#live-dashboard)
+- [Configuration](#configuration-express-middleware)
+- [Recipes](#recipes)
+- [Help & community](#help--community)
+
 ## Pick your setup
 
 cUrlit works in two modes. Pick the one that fits your stack:
@@ -115,6 +129,34 @@ Once satisfied, click **Export** to download it.
 | Sensitive header redaction | ✅     | ❌             | ❌                  |
 | Open source                | ✅     | ✅             | ❌                  |
 | One line to install        | ✅     | ❌             | ❌                  |
+
+---
+
+## Use cases
+
+### 🗂️ Building a Postman collection from scratch
+Your API is running but your Postman collection isn't. Hit your endpoints while testing and export the entire session in one click. What used to take hours takes seconds.
+
+### 🐛 Reproducing bugs
+A client reports an issue. Instead of asking them to describe the request, capture the exact cURL command from the live session and replay it locally — no guessing, no back and forth.
+
+### 🚀 Onboarding new developers
+A new engineer joins the team. Instead of hand-writing API docs, they run the server, hit the endpoints, and walk away with a working Postman collection in their first hour.
+
+### 🧪 QA and test case generation
+Every request captured by cUrlit is a test case waiting to happen. Export to Postman, add assertions, run as a collection. Regression testing from real traffic, not fabricated payloads.
+
+### 🏚️ Documenting legacy systems
+Old codebases nobody wants to touch. Drop the proxy in front, capture all the undocumented endpoints, and finally build documentation from real traffic without modifying a single line of code.
+
+### 🔗 Debugging third-party integrations
+A webhook provider is sending malformed requests. Proxy their calls through cUrlit to see exactly what's arriving — headers, body, method — before it hits your handler.
+
+### 🌍 Any backend, any language
+PHP shop. Django team. Rails project. Go microservice. None of them have a tool like this that works without touching their codebase. Drop the proxy in front and get the full dashboard instantly.
+
+### 🏫 Teaching REST APIs
+Running a workshop or tutorial? Run cUrlit so students can see every request they make in real time, with the cURL command ready to copy, study, and replay.
 
 ---
 
