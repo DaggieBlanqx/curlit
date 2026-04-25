@@ -1,6 +1,6 @@
 {
     "name": "curlit",
-    "version": "2.0.8",
+    "version": "2.0.9",
     "description": "Stop documenting your API manually. cUrlit is an Express middleware that intercepts every request and generates a ready-to-run cURL command — complete with a live browser dashboard. Copy, replay, and export your entire API as a Postman collection in one click.",
     "main": "index.js",
     "exports": "./index.js",
