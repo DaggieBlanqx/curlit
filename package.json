@@ -52,12 +52,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/daggieblanqx/curlit.git"
+        "url": "git+https://github.com/DaggieBlanqx/curlit.git"
     },
     "bugs": {
-        "url": "https://github.com/daggieblanqx/curlit/issues"
+        "url": "https://github.com/DaggieBlanqx/curlit/issues"
     },
-    "homepage": "https://github.com/daggieblanqx/curlit#readme",
+    "homepage": "https://github.com/DaggieBlanqx/curlit#readme",
     "author": {
         "name": "Daggie Blanqx",
         "url": "https://github.com/daggieblanqx"
