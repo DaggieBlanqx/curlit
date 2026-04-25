@@ -1,7 +1,5 @@
 # cUrlit — watch your Postman collection build itself
 
-<!-- npm card — rich visual, shows downloads graph and install command -->
-[![](https://nodei.co/npm/curlit.png)](https://npmjs.com/package/curlit)
 
 <!-- Package -->
 <img src="https://img.shields.io/npm/v/curlit" alt="Version"/>
@@ -16,14 +14,16 @@
 <img src="https://img.shields.io/github/issues/DaggieBlanqx/curlit" alt="GitHub issues"/>
 
 <!-- Community -->
-<img src="https://img.shields.io/github/stars/DaggieBlanqx/curlit?style=social" alt="GitHub stars"/>
-[![Twitter Follow](https://img.shields.io/twitter/follow/daggieblanqx?style=social)](https://twitter.com/daggieblanqx)
-[![Sponsor](https://img.shields.io/github/sponsors/DaggieBlanqx?label=Sponsor&logo=GitHub)](https://github.com/sponsors/DaggieBlanqx)
+<!-- npm card — rich visual, shows downloads graph and install command -->
+[![](https://nodei.co/npm/curlit.png)](https://npmjs.com/package/curlit)
 
+[![Twitter Follow](https://img.shields.io/twitter/follow/daggieblanqx?style=social)](https://twitter.com/daggieblanqx)
+
+[![Sponsor](https://img.shields.io/github/sponsors/DaggieBlanqx?label=Sponsor&logo=GitHub)](https://github.com/sponsors/DaggieBlanqx)
 <br/>
 
-> **Watch your Postman collection build itself.**
-> cUrlit sits between your client and server, captures every request, and gives you a live dashboard — with one-click Postman export.
+> cUrlit sits between your client and server, captures every request, and gives you a Postman Collection.
+
 > No config. No account. No API key. No AI.
 
 ---
@@ -39,7 +39,7 @@ cUrlit works in two modes. Pick the one that fits your stack:
 ---
 
 ### 🔌 Mode 1 — Express middleware
-_You are building an Express.js app_
+_Your API server exists as an Express.js app_
 
 ```bash
 npm install curlit
@@ -55,7 +55,7 @@ Open **http://localhost:3000/_curlit** — your live dashboard is ready.
 ---
 
 ### 🌍 Mode 2 — Standalone proxy
-_Your server is PHP, Django, Rails, Kotlin, Go, or anything else_
+_Your API server is in PHP, Django, Rails, Kotlin, Go, or anything else_
 
 ```bash
 npm install -g curlit
@@ -191,15 +191,24 @@ curl -X POST "http://localhost:9000/api/transactions" \
 ## File structure
 
 ```
-curlit/
-├── index.js        — middleware factory, request wiring
-├── cli.js          — curlit-proxy CLI entrypoint
-├── proxy.js        — http-proxy-middleware wrapper
-├── defaults.js     — DEFAULT_OPTIONS, DEFAULT_REDACTED_HEADERS, DEFAULT_AUTO_HEADERS
-├── helpers.js      — pure functions: curl building, escaping, body formatting
-├── ring-buffer.js  — fixed-size in-memory buffer with pub/sub for SSE
-├── dashboard.js    — SSE router, clear endpoint, HTML serving
-└── dashboard.html  — dashboard UI (Tailwind + IBM Plex, no build step)
+.
+├── README.md
+├── assets
+│   └── demo.gif
+├── index.js                    — root re-export shim
+├── package-lock.json
+├── package.json
+└── src
+    ├── index.js                — middleware factory, request wiring
+    ├── defaults.js             — DEFAULT_OPTIONS, DEFAULT_REDACTED_HEADERS, DEFAULT_AUTO_HEADERS
+    ├── helpers.js              — pure functions: curl building, escaping, body formatting
+    ├── ring-buffer.js          — fixed-size in-memory buffer with pub/sub for SSE
+    ├── dashboard
+    │   ├── dashboard.js        — SSE router, clear endpoint, HTML serving
+    │   └── dashboard.html      — dashboard UI (Tailwind + IBM Plex, no build step)
+    └── proxy
+        ├── cli.js              — curlit-proxy CLI entrypoint
+        └── proxy.js            — http-proxy-middleware wrapper
 ```
 
 ---
