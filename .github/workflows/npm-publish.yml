@@ -1,34 +1,35 @@
 name: Publish to NPM
 
-# Run this workflow every time code is pushed to the main branch.
 on:
   push:
     branches:
       - main
 
-# Prevent multiple publish workflows running at the same time.
-# If a newer push happens, cancel the older run.
+# Cancel any in-progress run on the same branch if a newer push arrives.
 concurrency:
   group: npm-publish-${{ github.ref }}
   cancel-in-progress: true
 
+# Shared setup used by all three jobs.
+env:
+  NODE_VERSION: "24"
+  REGISTRY_URL: https://registry.npmjs.org/
+
 jobs:
-  # ── Lint ──────────────────────────────────────────────────────────────────
-  test:
+  # 1. Lint 
+  # Run linting before doing anything else. If this fails, nothing publishes.
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     environment: Staging Environment
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          registry-url: https://registry.npmjs.org/
+          registry-url: ${{ env.REGISTRY_URL }}
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -41,44 +42,33 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Run lint
-        run: npm run lint
+      - run: npm run lint
 
-  # ── Detect which step to resume from ─────────────────────────────────────
+  # 2. Detect
+  # Compare package.json, git tags, GitHub releases, and npm to determine
+  # exactly where the last run failed so the publish job can resume from there.
   #
-  # Compares package.json, git tags, GitHub releases, and npm registry
-  # to determine exactly where the last run failed and resume from there.
+  # Publish order:
+  #   bump → tag → release → npm
   #
-  # Order of steps:
-  #   1. bump    — bump package.json and push to main
-  #   2. tag     — create and push git tag
-  #   3. release — create GitHub release
-  #   4. npm     — publish to npm (last, public-facing confirmation)
-  #
-  # Outputs:
-  #   step    — which step to start from: bump | tag | release | npm | none
-  #   version — the version to work with
+  # If all four are in sync, outputs step=none and the publish job is skipped.
   detect:
     name: Detect resume step
-    needs: test
+    needs: lint
     runs-on: ubuntu-latest
-
     outputs:
       step: ${{ steps.detect.outputs.step }}
       version: ${{ steps.detect.outputs.version }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          registry-url: https://registry.npmjs.org/
+          registry-url: ${{ env.REGISTRY_URL }}
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -98,15 +88,8 @@ jobs:
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           PKG_VERSION=$(node -p "require('./package.json').version")
-
-          # Latest git tag version (strip v prefix)
-          GIT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          GIT_VERSION=${GIT_TAG#v}
-
-          # Latest published npm version
+          GIT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "")
           NPM_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "0.0.0")
-
-          # GitHub release for current package.json version
           GH_RELEASE=$(gh release view "v$PKG_VERSION" --json tagName -q '.tagName' 2>/dev/null || echo "")
 
           echo "package.json : $PKG_VERSION"
@@ -114,85 +97,69 @@ jobs:
           echo "gh release   : $GH_RELEASE"
           echo "npm latest   : $NPM_VERSION"
 
-          # ── Decision logic ────────────────────────────────────────────────
-          #
-          # Everything in sync → nothing to do
+          # All four in sync → nothing to do
           if [ "$PKG_VERSION" = "$NPM_VERSION" ] && \
              [ "$GIT_VERSION" = "$PKG_VERSION" ] && \
              [ "$GH_RELEASE"  = "v$PKG_VERSION" ]; then
-            echo "All steps complete — nothing to do"
             echo "step=none" >> "$GITHUB_OUTPUT"
-            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
 
-          # Step 4 failed: git tag and GitHub release exist, npm not published yet
+          # git tag + release exist, npm missing → resume from npm
           elif [ "$GIT_VERSION" = "$PKG_VERSION" ] && \
                [ "$GH_RELEASE"  = "v$PKG_VERSION" ] && \
                [ "$NPM_VERSION" != "$PKG_VERSION" ]; then
-            echo "Resuming from: npm publish"
             echo "step=npm" >> "$GITHUB_OUTPUT"
-            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
 
-          # Step 3 failed: git tag exists, GitHub release missing, npm not published
-          elif [ "$GIT_VERSION" = "$PKG_VERSION" ] && \
-               [ -z "$GH_RELEASE" ]; then
-            echo "Resuming from: GitHub release"
+          # git tag exists, release missing, npm missing → resume from release
+          elif [ "$GIT_VERSION" = "$PKG_VERSION" ] && [ -z "$GH_RELEASE" ]; then
             echo "step=release" >> "$GITHUB_OUTPUT"
-            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
 
-          # Step 2 failed: package.json bumped, git tag not created yet
+          # package.json bumped, git tag missing → resume from tag
           elif [ "$GIT_VERSION" != "$PKG_VERSION" ] && \
                [ "$NPM_VERSION" != "$PKG_VERSION" ]; then
-            echo "Resuming from: git tag"
             echo "step=tag" >> "$GITHUB_OUTPUT"
-            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
 
-          # Step 1: no version change or fresh start
+          # package.json matches npm but no tag → new version, start fresh
           elif [ "$PKG_VERSION" = "$NPM_VERSION" ] && \
                [ "$GIT_VERSION" != "$PKG_VERSION" ]; then
-            echo "New version detected — starting from bump"
             echo "step=bump" >> "$GITHUB_OUTPUT"
-            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
 
           else
-            echo "No version change — nothing to do"
             echo "step=none" >> "$GITHUB_OUTPUT"
-            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
           fi
 
-  # ── Publish pipeline ──────────────────────────────────────────────────────
+          echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+
+  # 3. Publish
+  # Runs only when detect outputs a step other than none.
+  # Each step is conditionally skipped based on where we're resuming from,
+  # so the job always runs only the steps that are needed.
+  #
+  # Uses OIDC Trusted Publishing — no NPM_TOKEN needed.
+  # Setup: npmjs.com → curlit → Settings → Trusted Publishers → GitHub Actions
+  #   Owner: DaggieBlanqx | Repo: curlit | Workflow: npm-publish.yml
+  #   Environment: Staging Environment
   publish:
     name: Publish package
     needs: detect
     if: needs.detect.outputs.step != 'none'
     runs-on: ubuntu-latest
-
-    # environment must match the trusted publisher config on npmjs.com exactly.
-    # npm validates the OIDC token against this environment name — if it differs,
-    # the token is rejected and publish fails with a 404.
     environment: Staging Environment
-
     permissions:
-      contents: write
-      # Required for OIDC trusted publishing — allows GitHub to issue a
-      # short-lived token that npm accepts without any NPM_TOKEN secret.
-      id-token: write
-
+      contents: write # push version bump + create GitHub release
+      id-token: write # OIDC token for npm trusted publishing
     env:
       RESUME_STEP: ${{ needs.detect.outputs.step }}
       VERSION: ${{ needs.detect.outputs.version }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          registry-url: https://registry.npmjs.org/
+          registry-url: ${{ env.REGISTRY_URL }}
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -205,13 +172,17 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
+      # npm 11.5.1+ is required for OIDC trusted publishing
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
       - name: Configure Git
         if: env.RESUME_STEP == 'bump' || env.RESUME_STEP == 'tag'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      # ── Step 1: Bump package.json ─────────────────────────────────────────
+      # Step 1 — Bump package.json
       - name: Bump package.json
         if: env.RESUME_STEP == 'bump'
         run: |
@@ -222,78 +193,44 @@ jobs:
           git push origin main
           echo "VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
 
-      # ── Step 2: Create and push git tag ───────────────────────────────────
+      # Step 2 — Create and push git tag
       - name: Create git tag
         if: env.RESUME_STEP == 'bump' || env.RESUME_STEP == 'tag'
         run: |
-          # If resuming from tag step, pull latest main to get the bump commit
-          if [ "$RESUME_STEP" = "tag" ]; then
-            git pull origin main
-          fi
+          if [ "$RESUME_STEP" = "tag" ]; then git pull origin main; fi
           git tag "v$VERSION" -m "v$VERSION"
           git push origin "v$VERSION"
 
-      # ── Step 3: Create GitHub release ─────────────────────────────────────
+      # Step 3 — Create GitHub release
       - name: Generate release notes
         if: env.RESUME_STEP == 'bump' || env.RESUME_STEP == 'tag' || env.RESUME_STEP == 'release'
         id: notes
         run: |
           CURRENT_TAG="v$VERSION"
           PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || true)
-
           if [ -z "$PREV_TAG" ]; then
-            NOTES=$(git log --pretty=format:"- %s (%h)" -20 \
-              | grep -v "\[skip ci\]")
+            NOTES=$(git log --pretty=format:"- %s (%h)" -20 | grep -v "\[skip ci\]")
           else
-            NOTES=$(git log "$PREV_TAG".."$CURRENT_TAG"^ \
-              --pretty=format:"- %s (%h)" \
-              | grep -v "\[skip ci\]")
+            NOTES=$(git log "$PREV_TAG".."$CURRENT_TAG"^ --pretty=format:"- %s (%h)" | grep -v "\[skip ci\]")
           fi
-
-          {
-            echo "notes<<EOF"
-            echo "$NOTES"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          { echo "notes<<EOF"; echo "$NOTES"; echo "EOF"; } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
         if: env.RESUME_STEP == 'bump' || env.RESUME_STEP == 'tag' || env.RESUME_STEP == 'release'
         uses: actions/github-script@v7
         with:
           script: |
-            const version = process.env.VERSION
-            const notes = `${{ steps.notes.outputs.notes }}`
-
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `v${version}`,
-              name: `v${version}`,
-              body: `## What's changed\n\n${notes}\n\n---\n📦 [View on npm](https://www.npmjs.com/package/curlit/v/${version})`,
+              tag_name: `v${{ env.VERSION }}`,
+              name: `v${{ env.VERSION }}`,
+              body: `## What's changed\n\n${{ steps.notes.outputs.notes }}\n\n---\n📦 [View on npm](https://www.npmjs.com/package/curlit/v/${{ env.VERSION }})`,
               draft: false,
               prerelease: false,
               generate_release_notes: false,
             });
 
-      # ── Step 4: Publish to npm ────────────────────────────────────────────
-      # Last step — npm going public is the final confirmation that
-      # package.json, git tag, and GitHub release are all already in place.
-      #
-      # Uses OIDC Trusted Publishing — no NPM_TOKEN needed.
-      # Prerequisite: configure curlit as a Trusted Publisher on npmjs.com:
-      #   npmjs.com → curlit → Settings → Trusted Publishers → GitHub Actions
-      #   Owner: DaggieBlanqx | Repo: curlit | Workflow: npm-publish.yml
-      #   Environment: Staging Environment
-
-      - name: Debug OIDC context
-        run: |
-          echo "Repository : ${{ github.repository }}"
-          echo "Workflow   : ${{ github.workflow }}"
-          echo "Environment: Staging Environment"
-          echo "Ref        : ${{ github.ref }}"
-
-      - name: Upgrade npm for OIDC trusted publishing
-        run: npm install -g npm@latest
-
+      # Step 4 — Publish to npm (always last)
       - name: Publish to npm
         run: npm publish --access public
